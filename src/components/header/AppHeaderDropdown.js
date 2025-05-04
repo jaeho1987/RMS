@@ -1,4 +1,7 @@
 import React from 'react'
+import axios from 'axios'
+import { useNavigate } from 'react-router-dom'
+
 import {
   CAvatar,
   CBadge,
@@ -15,16 +18,29 @@ import {
   cilCommentSquare,
   cilEnvelopeOpen,
   cilFile,
-  cilLockLocked,
+  // cilLockLocked,
   cilSettings,
   cilTask,
   cilUser,
+  cilAccountLogout,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 
 import avatar8 from './../../assets/images/avatars/8.jpg'
 
 const AppHeaderDropdown = () => {
+  const navigate = useNavigate()
+
+  const handleLogout = async () => {
+    try {
+      await axios.post('/logout', 'null', {
+        withCredentials: true,
+      })
+      navigate('/login')
+    } catch (err) {
+      console.log('logout failed', err)
+    }
+  }
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
@@ -83,10 +99,15 @@ const AppHeaderDropdown = () => {
             42
           </CBadge>
         </CDropdownItem>
+        {/*<CDropdownDivider />*/}
+        {/*<CDropdownItem href="#">*/}
+        {/*  <CIcon icon={cilLockLocked} className="me-2" />*/}
+        {/*  Lock Account*/}
+        {/*</CDropdownItem>*/}
         <CDropdownDivider />
-        <CDropdownItem href="#">
-          <CIcon icon={cilLockLocked} className="me-2" />
-          Lock Account
+        <CDropdownItem onClick={handleLogout}>
+          <CIcon icon={cilAccountLogout} className="me-2" />
+          Logout
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
