@@ -13,7 +13,7 @@ const ProtectedRoute = ({ children }) => {
   }, [])
 
   if (isAuthenticated === null) {
-    return <div>로딩 중...</div>  // 또는 스피너 넣어도 됨
+    return <div>로딩 중...</div> // 또는 스피너 넣어도 됨
   }
 
   if (!isAuthenticated) {
