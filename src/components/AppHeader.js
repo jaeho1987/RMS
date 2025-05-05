@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
+import { NavLink } from 'react-router-dom'
 import {
   CContainer,
   CDropdown,
@@ -27,14 +27,20 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import { useNavigate } from 'react-router-dom'
 
 const AppHeader = () => {
+  const navigate = useNavigate()
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
 
   const dispatch = useDispatch()
   const sidebarShow = useSelector((state) => state.sidebarShow)
 
+  const menuList = useSelector((state) => state.menuList)
+  const topMenu = useSelector((state) => state.topMenu)
+
+  const topMenus = menuList.filter((menu) => menu.parentSeq === null)
   useEffect(() => {
     document.addEventListener('scroll', () => {
       headerRef.current &&
@@ -42,6 +48,17 @@ const AppHeader = () => {
     })
   }, [])
 
+  const handleTopMenuClick = (topMenuSeq) => {
+    dispatch({ type: 'set', topMenu: topMenuSeq })
+
+    // 하위 메뉴 중 첫 번째 메뉴를 찾아 이동
+    const firstChild = menuList
+      .filter((m) => m.parentSeq === topMenuSeq && m.menuPath)
+      .sort((a, b) => a.menuOrder - b.menuOrder)[0]
+    if (firstChild) {
+      navigate(firstChild.menuPath)
+    }
+  }
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
       <CContainer className="border-bottom px-4" fluid>
@@ -51,19 +68,22 @@ const AppHeader = () => {
         >
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
+
+        {/* ✅ 동적 상단 탭 */}
         <CHeaderNav className="d-none d-md-flex">
-          <CNavItem>
-            <CNavLink to="/dashboard" as={NavLink}>
-              Dashboard
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Users</CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
-          </CNavItem>
+          {topMenus.map((menu) => (
+            <CNavItem key={menu.menuSeq}>
+              <CNavLink
+                as="button"
+                active={menu.menuSeq === topMenu}
+                onClick={() => handleTopMenuClick(menu.menuSeq)}
+              >
+                {menu.menuName}
+              </CNavLink>
+            </CNavItem>
+          ))}
         </CHeaderNav>
+
         <CHeaderNav className="ms-auto">
           <CNavItem>
             <CNavLink href="#">
@@ -81,6 +101,7 @@ const AppHeader = () => {
             </CNavLink>
           </CNavItem>
         </CHeaderNav>
+
         <CHeaderNav>
           <li className="nav-item py-1">
             <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
