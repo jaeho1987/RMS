@@ -18,7 +18,7 @@ export const AppSidebarNav = ({ items }) => {
                 <span className="nav-icon-bullet"></span>
               </span>
             )}
-        {name && name}
+        {name}
         {badge && (
           <CBadge color={badge.color} className="ms-auto" size="sm">
             {badge.text}
@@ -29,30 +29,35 @@ export const AppSidebarNav = ({ items }) => {
   }
 
   const navItem = (item, index, indent = false) => {
-    const { component, name, badge, icon, ...rest } = item
+    const { component, name, badge, icon, to, href, ...rest } = item
     const Component = component
+
     return (
-      <Component as="li" key={index}>{/* ✅ 반드시 as="li" 지정 */}
-        {rest.to || rest.href ? (
+      <Component as="li" key={index}>
+        {to || href ? (
           <CNavLink
-            {...(rest.to && { as: NavLink })}
-            {...(rest.href && { target: '_blank', rel: 'noopener noreferrer' })}
+            as={NavLink}
+            to={to}
+            end
+            className="nav-link"
+            {...(href && { target: '_blank', rel: 'noopener noreferrer' })}
             {...rest}
           >
             {navLink(name, icon, badge, indent)}
           </CNavLink>
         ) : (
-          navLink(name, icon, badge, indent)
+          <span className="nav-link">{navLink(name, icon, badge, indent)}</span>
         )}
       </Component>
     )
   }
 
   const navGroup = (item, index) => {
-    const { component, name, icon, items, to, ...rest } = item
+    const { component, name, icon, items } = item
     const Component = component
+
     return (
-      <Component as="li" compact key={index} toggler={navLink(name, icon)} {...rest}>
+      <Component as="li" key={index} toggler={navLink(name, icon)}>
         {items?.map((child, childIndex) =>
           child.items ? navGroup(child, childIndex) : navItem(child, childIndex, true),
         )}
@@ -62,8 +67,7 @@ export const AppSidebarNav = ({ items }) => {
 
   return (
     <CSidebarNav as={SimpleBar}>
-      {items &&
-        items.map((item, index) => (item.items ? navGroup(item, index) : navItem(item, index)))}
+      {items?.map((item, index) => (item.items ? navGroup(item, index) : navItem(item, index)))}
     </CSidebarNav>
   )
 }

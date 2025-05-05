@@ -1,9 +1,20 @@
 import React from 'react'
-
+//////////////////////아키텍처 START
+const RequirementsDefinition = React.lazy(
+  () => import('./views/requirements/RequirementsDefinition'),
+)
+const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
+//////////////////////아기텍처 종료
+//////////////////////시스템관리 START
+const UserManagement = React.lazy(() => import('./views/system/UserManagement'))
+const CodeManagement = React.lazy(() => import('./views/system/CodeManagement'))
+//////////////////////시스템관리 종료
+const CompanyList = React.lazy(() => import('./views/company/CompanyList'))
+const CompanyForm = React.lazy(() => import('./views/company/CompanyForm'))
+//////////////////////coreUI START
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
 const Typography = React.lazy(() => import('./views/theme/typography/Typography'))
-
 // Base
 const Accordion = React.lazy(() => import('./views/base/accordion/Accordion'))
 const Breadcrumbs = React.lazy(() => import('./views/base/breadcrumbs/Breadcrumbs'))
@@ -20,12 +31,10 @@ const Spinners = React.lazy(() => import('./views/base/spinners/Spinners'))
 const Tabs = React.lazy(() => import('./views/base/tabs/Tabs'))
 const Tables = React.lazy(() => import('./views/base/tables/Tables'))
 const Tooltips = React.lazy(() => import('./views/base/tooltips/Tooltips'))
-
 // Buttons
 const Buttons = React.lazy(() => import('./views/buttons/buttons/Buttons'))
 const ButtonGroups = React.lazy(() => import('./views/buttons/button-groups/ButtonGroups'))
 const Dropdowns = React.lazy(() => import('./views/buttons/dropdowns/Dropdowns'))
-
 //Forms
 const ChecksRadios = React.lazy(() => import('./views/forms/checks-radios/ChecksRadios'))
 const FloatingLabels = React.lazy(() => import('./views/forms/floating-labels/FloatingLabels'))
@@ -35,14 +44,11 @@ const Layout = React.lazy(() => import('./views/forms/layout/Layout'))
 const Range = React.lazy(() => import('./views/forms/range/Range'))
 const Select = React.lazy(() => import('./views/forms/select/Select'))
 const Validation = React.lazy(() => import('./views/forms/validation/Validation'))
-
 const Charts = React.lazy(() => import('./views/charts/Charts'))
-
 // Icons
 const CoreUIIcons = React.lazy(() => import('./views/icons/coreui-icons/CoreUIIcons'))
 const Flags = React.lazy(() => import('./views/icons/flags/Flags'))
 const Brands = React.lazy(() => import('./views/icons/brands/Brands'))
-
 // Notifications
 const Alerts = React.lazy(() => import('./views/notifications/alerts/Alerts'))
 const Badges = React.lazy(() => import('./views/notifications/badges/Badges'))
@@ -50,8 +56,25 @@ const Modals = React.lazy(() => import('./views/notifications/modals/Modals'))
 const Toasts = React.lazy(() => import('./views/notifications/toasts/Toasts'))
 
 const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
-
+//////////////////////coreUI END
 const routes = [
+  {
+    path: '/requirements/definition',
+    name: '요구사항정의',
+    element: <RequirementsDefinition />,
+    private: true,
+  },
+  {
+    path: '/requirements/tracking',
+    name: '요구사항추적',
+    element: <RequirementsTracking />,
+    private: true,
+  },
+  { path: '/system/company', name: '회사목록', element: <CompanyList />, private: true },
+  { path: '/system/company/new', name: '회사등록', element: <CompanyForm />, private: true },
+  { path: '/system/company/:id', name: '회사수정', element: <CompanyForm />, private: true },
+  { path: '/system/user', name: '사용자관리', element: <UserManagement />, private: true },
+  { path: '/system/code', name: '공통코드관리', element: <CodeManagement />, private: true },
   { path: '/', exact: true, name: 'Home', element: <Dashboard />, private: true },
   { path: '/dashboard', name: 'Dashboard', element: <Dashboard />, private: true },
   { path: '/theme', name: 'Theme', element: <Colors />, exact: true, private: true },

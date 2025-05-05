@@ -1,51 +1,40 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
-
-import routes from '../routes'
-
+import { useSelector } from 'react-redux'
 import { CBreadcrumb, CBreadcrumbItem } from '@coreui/react'
 
 const AppBreadcrumb = () => {
-  const currentLocation = useLocation().pathname
+  const location = useLocation()
+  const menuList = useSelector((state) => state.menuList)
 
-  const getRouteName = (pathname, routes) => {
-    const currentRoute = routes.find((route) => route.path === pathname)
-    return currentRoute ? currentRoute.name : false
+  // 현재 경로로 매칭되는 메뉴 찾기
+  const findCurrentMenu = (path) => {
+    return menuList.find((m) => m.menuPath === path)
   }
 
-  const getBreadcrumbs = (location) => {
-    const breadcrumbs = []
-    location.split('/').reduce((prev, curr, index, array) => {
-      const currentPathname = `${prev}/${curr}`
-      const routeName = getRouteName(currentPathname, routes)
-      routeName &&
-        breadcrumbs.push({
-          pathname: currentPathname,
-          name: routeName,
-          active: index + 1 === array.length ? true : false,
-        })
-      return currentPathname
-    })
-    return breadcrumbs
+  // 상위 메뉴들을 재귀적으로 추적
+  const buildBreadcrumbTrail = (menu) => {
+    const trail = []
+    let current = menu
+
+    while (current) {
+      trail.unshift(current)
+      current = menuList.find((m) => m.menuSeq === current.parentSeq)
+    }
+
+    return trail
   }
 
-  const breadcrumbs = getBreadcrumbs(currentLocation)
+  const currentMenu = findCurrentMenu(location.pathname)
+  const breadcrumbTrail = currentMenu ? buildBreadcrumbTrail(currentMenu) : []
 
   return (
-    <CBreadcrumb className="my-0">
-      <CBreadcrumbItem href="/">Home</CBreadcrumbItem>
-      {breadcrumbs.map((breadcrumb, index) => {
-        return (
-          <CBreadcrumbItem
-            {...(breadcrumb.active ? { active: true } : { href: breadcrumb.pathname })}
-            key={index}
-          >
-            {breadcrumb.name}
-          </CBreadcrumbItem>
-        )
-      })}
+    <CBreadcrumb className="m-0 ms-2">
+      {breadcrumbTrail.map((menu) => (
+        <CBreadcrumbItem key={menu.menuSeq}>{menu.menuName}</CBreadcrumbItem>
+      ))}
     </CBreadcrumb>
   )
 }
 
-export default React.memo(AppBreadcrumb)
+export default AppBreadcrumb

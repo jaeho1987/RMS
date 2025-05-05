@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
-import { NavLink } from 'react-router-dom'
 import {
   CContainer,
   CDropdown,
@@ -10,8 +10,8 @@ import {
   CHeader,
   CHeaderNav,
   CHeaderToggler,
-  CNavLink,
   CNavItem,
+  CNavLink,
   useColorModes,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
@@ -27,38 +27,53 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
-import { useNavigate } from 'react-router-dom'
 
 const AppHeader = () => {
-  const navigate = useNavigate()
   const headerRef = useRef()
   const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
-
   const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const navigate = useNavigate()
 
+  const sidebarShow = useSelector((state) => state.sidebarShow)
   const menuList = useSelector((state) => state.menuList)
   const topMenu = useSelector((state) => state.topMenu)
 
+  // 🔍 상단 탭 클릭 시 navigate 먼저, topMenu 설정은 딜레이
+  const handleTopMenuClick = (topMenuSeq) => {
+    const path = findFirstMenuPath(topMenuSeq)
+    if (path) {
+      console.log('🧭 Navigating to:', path)
+      navigate(path)
+    }
+
+    setTimeout(() => {
+      dispatch({ type: 'set', topMenu: topMenuSeq })
+    }, 100)
+  }
+
+  // 최하위 path 탐색
+  const findFirstMenuPath = (parentSeq) => {
+    const children = menuList
+      .filter((m) => m.parentSeq === parentSeq)
+      .sort((a, b) => a.menuOrder - b.menuOrder)
+
+    for (const child of children) {
+      if (child.menuPath) return child.menuPath
+      const deeper = findFirstMenuPath(child.menuSeq)
+      if (deeper) return deeper
+    }
+
+    return null
+  }
+
   const topMenus = menuList.filter((menu) => menu.parentSeq === null)
+
   useEffect(() => {
     document.addEventListener('scroll', () => {
-      headerRef.current &&
-        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
+      headerRef.current?.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
     })
   }, [])
 
-  const handleTopMenuClick = (topMenuSeq) => {
-    dispatch({ type: 'set', topMenu: topMenuSeq })
-
-    // 하위 메뉴 중 첫 번째 메뉴를 찾아 이동
-    const firstChild = menuList
-      .filter((m) => m.parentSeq === topMenuSeq && m.menuPath)
-      .sort((a, b) => a.menuOrder - b.menuOrder)[0]
-    if (firstChild) {
-      navigate(firstChild.menuPath)
-    }
-  }
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
       <CContainer className="border-bottom px-4" fluid>
@@ -69,7 +84,6 @@ const AppHeader = () => {
           <CIcon icon={cilMenu} size="lg" />
         </CHeaderToggler>
 
-        {/* ✅ 동적 상단 탭 */}
         <CHeaderNav className="d-none d-md-flex">
           {topMenus.map((menu) => (
             <CNavItem key={menu.menuSeq}>
@@ -117,31 +131,13 @@ const AppHeader = () => {
               )}
             </CDropdownToggle>
             <CDropdownMenu>
-              <CDropdownItem
-                active={colorMode === 'light'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('light')}
-              >
+              <CDropdownItem active={colorMode === 'light'} onClick={() => setColorMode('light')}>
                 <CIcon className="me-2" icon={cilSun} size="lg" /> Light
               </CDropdownItem>
-              <CDropdownItem
-                active={colorMode === 'dark'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('dark')}
-              >
+              <CDropdownItem active={colorMode === 'dark'} onClick={() => setColorMode('dark')}>
                 <CIcon className="me-2" icon={cilMoon} size="lg" /> Dark
               </CDropdownItem>
-              <CDropdownItem
-                active={colorMode === 'auto'}
-                className="d-flex align-items-center"
-                as="button"
-                type="button"
-                onClick={() => setColorMode('auto')}
-              >
+              <CDropdownItem active={colorMode === 'auto'} onClick={() => setColorMode('auto')}>
                 <CIcon className="me-2" icon={cilContrast} size="lg" /> Auto
               </CDropdownItem>
             </CDropdownMenu>
@@ -152,6 +148,7 @@ const AppHeader = () => {
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>
+
       <CContainer className="px-4" fluid>
         <AppBreadcrumb />
       </CContainer>

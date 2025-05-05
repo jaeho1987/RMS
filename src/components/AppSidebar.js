@@ -89,9 +89,10 @@ const AppSidebar = () => {
 
   const convertToNavFormat = (treeList) => {
     return treeList.map((item) => {
-      const icon = item.menuIcon && iconMap[item.menuIcon]
-        ? <CIcon icon={iconMap[item.menuIcon]} customClassName="nav-icon" />
-        : null
+      const icon =
+        item.menuIcon && iconMap[item.menuIcon] ? (
+          <CIcon icon={iconMap[item.menuIcon]} customClassName="nav-icon" />
+        ) : null
 
       if (Array.isArray(item.children) && item.children.length > 0) {
         return {
@@ -139,7 +140,7 @@ const AppSidebar = () => {
       </CSidebarHeader>
 
       <CSidebarNav>
-        <AppSidebarNav items={menuItems} />
+        <AppSidebarNav items={menuItems} key={topMenu} />
       </CSidebarNav>
     </CSidebar>
   )
