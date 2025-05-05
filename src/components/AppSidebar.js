@@ -14,7 +14,7 @@ import { AppSidebarNav } from './AppSidebarNav'
 import { logo } from 'src/assets/brand/logo'
 import { sygnet } from 'src/assets/brand/sygnet'
 
-// ✅ 정확한 아이콘만 개별 import
+// 아이콘 import
 import {
   cilPuzzle,
   cilBell,
@@ -52,7 +52,7 @@ const iconMap = {
   'cil-input-power': cilInputPower,
   'cil-check': cilCheck,
   'cil-check-circle': cilCheckCircle,
-  'cil-options': cilOptions,  // ✅ cil-slider → cil-options
+  'cil-options': cilOptions,
   'cil-grid': cilGrid,
   'cil-warning': cilWarning,
   'cil-badge': cilBadge,
@@ -67,8 +67,6 @@ const AppSidebar = () => {
   const sidebarShow = useSelector((state) => state.sidebarShow)
   const menuList = useSelector((state) => state.menuList)
   const topMenu = useSelector((state) => state.topMenu)
-
-  const filteredMenus = menuList.filter((m) => m.parentSeq === topMenu)
 
   const buildMenuTree = (list) => {
     const map = {}
@@ -91,35 +89,31 @@ const AppSidebar = () => {
 
   const convertToNavFormat = (treeList) => {
     return treeList.map((item) => {
-      let icon = null
-      if (item.menuIcon && iconMap[item.menuIcon]) {
-        icon = <CIcon icon={iconMap[item.menuIcon]} customClassName="nav-icon" />
-      }
+      const icon = item.menuIcon && iconMap[item.menuIcon]
+        ? <CIcon icon={iconMap[item.menuIcon]} customClassName="nav-icon" />
+        : null
 
-      const children =
-        item.children && item.children.length > 0
-          ? convertToNavFormat(item.children)
-          : [
-            {
-              component: CNavItem,
-              name: item.menuName,
-              to: item.menuPath,
-              icon,
-            },
-          ]
-
-      return {
-        component: CNavGroup,
-        name: item.menuName,
-        icon,
-        to: undefined,
-        items: children,
+      if (Array.isArray(item.children) && item.children.length > 0) {
+        return {
+          component: CNavGroup,
+          name: item.menuName,
+          icon,
+          items: convertToNavFormat(item.children),
+        }
+      } else {
+        return {
+          component: CNavItem,
+          name: item.menuName,
+          icon,
+          to: item.menuPath,
+        }
       }
     })
   }
 
-  const tree = buildMenuTree(filteredMenus)
-  const menuItems = convertToNavFormat(tree)
+  const fullTree = buildMenuTree(menuList)
+  const topNode = fullTree.find((m) => m.menuSeq === topMenu)
+  const menuItems = convertToNavFormat(topNode?.children || [])
 
   return (
     <CSidebar
