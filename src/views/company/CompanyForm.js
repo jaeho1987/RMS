@@ -10,7 +10,8 @@ import {
   CRow,
 } from '@coreui/react'
 import { useNavigate, useParams } from 'react-router-dom'
-import axios from 'axios'
+import axiosInstance from 'src/api/axiosInstance'
+import { normalizeObject } from 'src/utils/common'
 
 const CompanyForm = () => {
   const navigate = useNavigate()
@@ -34,7 +35,7 @@ const CompanyForm = () => {
 
   useEffect(() => {
     if (isEdit) {
-      axios.get(`/api/system/companies/${id}`).then((res) => setForm(res.data))
+      axiosInstance.get(`/api/system/companies/${id}`).then((res) => setForm(normalizeObject(res.data)))
     }
   }, [id])
 
@@ -53,10 +54,10 @@ const CompanyForm = () => {
 
     try {
       if (isEdit) {
-        await axios.put(`/api/system/companies/${id}`, { ...form, bizNo: cleanedBizNo })
+        await axiosInstance.put(`/api/system/companies/${id}`, { ...form, bizNo: cleanedBizNo })
         alert('수정이 완료되었습니다.')
       } else {
-        const res = await axios.post('/api/system/companies', { ...form, bizNo: cleanedBizNo })
+        const res = await axiosInstance.post('/api/system/companies', { ...form, bizNo: cleanedBizNo })
         const companySeq = res.data.companySeq
         alert('등록이 완료되었습니다.')
         navigate(`/system/company/${companySeq}`)
