@@ -1,5 +1,5 @@
 import React from 'react'
-import axios from 'axios'
+import axios from '../../api/axiosInstance'
 import { useNavigate } from 'react-router-dom'
 
 import {

@@ -1,62 +1,60 @@
 import React, { useEffect, useState } from 'react'
 import {
-  CButton,
   CCard,
   CCardBody,
   CCol,
   CForm,
   CFormInput,
   CRow,
-  CTable,
-  CTableBody,
-  CTableDataCell,
-  CTableHead,
-  CTableHeaderCell,
-  CTableRow,
+  CButton,
 } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axiosInstance from 'src/api/axiosInstance'
+import DhtmlxCompanyGrid from 'src/components/DhtmlxCompanyGrid'
 
 const CompanyList = () => {
   const navigate = useNavigate()
-  const [filter, setFilter] = useState({
-    companyName: '',
-    bizNo: '',
-    telNo: '',
-  })
-  const [list, setList] = useState([])
+  const [filter, setFilter] = useState({ companyName: '', bizNo: '', telNo: '' })
+  const [data, setData] = useState([])
 
-  const fetchList = async () => {
-    try {
-      const res = await axios.get('/api/system/companies', { params: filter })
-      setList(res.data)
-    } catch (err) {
-      console.error(err)
-      alert('목록 조회에 실패했습니다.')
-    }
+  const fetchData = async () => {
+    const res = await axiosInstance.get('/api/system/companies', { params: filter })
+    setData(res.data)
   }
 
   useEffect(() => {
-    fetchList()
+    fetchData()
   }, [])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFilter({ ...filter, [name]: value })
+    setFilter((prev) => ({ ...prev, [name]: value }))
   }
 
   const handleSearch = (e) => {
     e.preventDefault()
-    fetchList()
+    fetchData()
+  }
+
+  const gridConfig = {
+    theme: document.documentElement.getAttribute('data-coreui-theme') || 'light',
+    height: 400,
+    autoWidth: true,
+    columns: [
+      { id: 'companyName', header: [{ text: '회사명' }], width: 200 },
+      { id: 'bizNo', header: [{ text: '사업자번호' }], width: 150 },
+      { id: 'telNo', header: [{ text: '전화번호' }], width: 150 },
+      { id: 'address', header: [{ text: '주소' }], fillspace: true },
+    ],
+    contextMenu: true,
   }
 
   return (
     <>
-      {/* 🔍 조회영역 */}
       <CCard className="mb-3">
         <CCardBody>
           <CForm onSubmit={handleSearch}>
-            <CRow className="mb-3">
+            <CRow className="mb-2">
               <CCol md={4}>
                 <CFormInput label="회사명" name="companyName" value={filter.companyName} onChange={handleChange} />
               </CCol>
@@ -74,7 +72,6 @@ const CompanyList = () => {
         </CCardBody>
       </CCard>
 
-      {/* 📋 목록영역 */}
       <CCard>
         <CCardBody>
           <div className="d-flex justify-content-end mb-3">
@@ -82,31 +79,11 @@ const CompanyList = () => {
               신규 등록
             </CButton>
           </div>
-
-          <CTable hover responsive>
-            <CTableHead>
-              <CTableRow>
-                <CTableHeaderCell>회사명</CTableHeaderCell>
-                <CTableHeaderCell>사업자번호</CTableHeaderCell>
-                <CTableHeaderCell>전화번호</CTableHeaderCell>
-                <CTableHeaderCell>주소</CTableHeaderCell>
-              </CTableRow>
-            </CTableHead>
-            <CTableBody>
-              {list.map((item) => (
-                <CTableRow
-                  key={item.companySeq}
-                  style={{ cursor: 'pointer' }}
-                  onClick={() => navigate(`/system/company/${item.companySeq}`)}
-                >
-                  <CTableDataCell>{item.companyName}</CTableDataCell>
-                  <CTableDataCell>{item.bizNo}</CTableDataCell>
-                  <CTableDataCell>{item.telNo}</CTableDataCell>
-                  <CTableDataCell>{item.address}</CTableDataCell>
-                </CTableRow>
-              ))}
-            </CTableBody>
-          </CTable>
+          <DhtmlxCompanyGrid
+            data={data}
+            config={gridConfig}
+            onRowClick={(row) => navigate(`/system/company/${row.companySeq}`)}
+          />
         </CCardBody>
       </CCard>
     </>

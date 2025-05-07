@@ -38,7 +38,7 @@ export const AppSidebarNav = ({ items }) => {
           <CNavLink
             as={NavLink}
             to={to}
-            end
+            end={false}
             className="nav-link"
             {...(href && { target: '_blank', rel: 'noopener noreferrer' })}
             {...rest}
