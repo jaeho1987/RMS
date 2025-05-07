@@ -10,12 +10,15 @@ const DhtmlxCompanyGrid = ({ data = [], config = {}, onRowClick }) => {
     columns = [],
     height = 400,
     autoWidth = true,
-    resizable = true,       // ✅ 기본값 true로 설정
-    theme = 'light',
+    resizable = true,
   } = config
 
+  const getCoreUITheme = () =>
+    document.documentElement.getAttribute('data-coreui-theme') || 'light'
+
   const applyGrid = () => {
-    setTheme(theme)
+    const currentTheme = getCoreUITheme()
+    setTheme(currentTheme)
 
     if (grid.current) {
       grid.current.destructor()
@@ -28,7 +31,7 @@ const DhtmlxCompanyGrid = ({ data = [], config = {}, onRowClick }) => {
       columns,
       autoWidth,
       height,
-      resizable, // ✅ 사용자 컬럼 사이즈 조절 허용 여부
+      resizable,
     })
 
     if (onRowClick) {
@@ -51,7 +54,7 @@ const DhtmlxCompanyGrid = ({ data = [], config = {}, onRowClick }) => {
       observer.disconnect()
       grid.current?.destructor()
     }
-  }, [data, config])
+  }, [data, config]) // theme은 내부 감지 → dependency 불필요
 
   return <div ref={gridRef} />
 }
