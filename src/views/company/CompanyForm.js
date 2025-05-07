@@ -11,6 +11,7 @@ import {
 } from '@coreui/react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axiosInstance from 'src/api/axiosInstance'
+import { normalizeObject } from 'src/utils/common'
 
 const CompanyForm = () => {
   const navigate = useNavigate()
@@ -34,7 +35,7 @@ const CompanyForm = () => {
 
   useEffect(() => {
     if (isEdit) {
-      axiosInstance.get(`/api/system/companies/${id}`).then((res) => setForm(res.data))
+      axiosInstance.get(`/api/system/companies/${id}`).then((res) => setForm(normalizeObject(res.data)))
     }
   }, [id])
 
