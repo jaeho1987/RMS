@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCol, CForm, CFormInput, CRow, CButton } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from 'src/api/axiosInstance'
-import DhtmlxCompanyGrid from 'src/components/DhtmlxCompanyGrid'
+import DhtmlxGrid from 'src/components/DhtmlxGrid'
 
 const CompanyList = () => {
   const navigate = useNavigate()
@@ -38,7 +38,6 @@ const CompanyList = () => {
       { id: 'telNo', header: [{ text: '전화번호' }], width: 150 },
       { id: 'address', header: [{ text: '주소' }], fillspace: true },
     ],
-    contextMenu: true,
   }
 
   return (
@@ -88,7 +87,7 @@ const CompanyList = () => {
               신규 등록
             </CButton>
           </div>
-          <DhtmlxCompanyGrid
+          <DhtmlxGrid
             data={data}
             config={gridConfig}
             onRowClick={(row) => navigate(`/system/company/${row.companySeq}`)}

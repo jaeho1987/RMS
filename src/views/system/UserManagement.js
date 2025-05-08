@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CCard, CCardBody, CCol, CForm, CFormInput, CRow, CButton } from '@coreui/react'
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from 'src/api/axiosInstance'
-import DhtmlxCompanyGrid from 'src/components/DhtmlxCompanyGrid'
+import DhtmlxGrid from 'src/components/DhtmlxGrid'
 
 const UserList = () => {
   const navigate = useNavigate()
@@ -95,7 +95,7 @@ const UserList = () => {
               신규 등록
             </CButton>
           </div>
-          <DhtmlxCompanyGrid
+          <DhtmlxGrid
             data={data}
             config={gridConfig}
             onRowClick={(row) => navigate(`/system/company/${row.userId}`)}
