@@ -38,7 +38,6 @@ const CompanyList = () => {
       { id: 'telNo', header: [{ text: '전화번호' }], width: 150 },
       { id: 'address', header: [{ text: '주소' }], fillspace: true },
     ],
-    contextMenu: true,
   }
 
   return (
