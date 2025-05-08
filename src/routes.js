@@ -11,6 +11,9 @@ const CodeManagement = React.lazy(() => import('./views/system/CodeManagement'))
 //////////////////////시스템관리 종료
 const CompanyList = React.lazy(() => import('./views/company/CompanyList'))
 const CompanyForm = React.lazy(() => import('./views/company/CompanyForm'))
+// 사용자
+const UserList = React.lazy(() => import('./views/user/UserList'))
+const UserForm = React.lazy(() => import('./views/user/UserForm'))
 //////////////////////coreUI START
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 const Colors = React.lazy(() => import('./views/theme/colors/Colors'))
@@ -74,6 +77,8 @@ const routes = [
   { path: '/system/company/new', name: '회사등록', element: <CompanyForm />, private: true },
   { path: '/system/company/:id', name: '회사수정', element: <CompanyForm />, private: true },
   { path: '/system/user', name: '사용자관리', element: <UserManagement />, private: true },
+  { path: '/system/user/new', name: '회사등록', element: <UserForm />, private: true },
+  { path: '/system/user/:id', name: '회사수정', element: <UserForm />, private: true },
   { path: '/system/code', name: '공통코드관리', element: <CodeManagement />, private: true },
   { path: '/', exact: true, name: 'Home', element: <Dashboard />, private: true },
   { path: '/dashboard', name: 'Dashboard', element: <Dashboard />, private: true },
