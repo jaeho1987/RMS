@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { Grid, setTheme } from 'dhx-suite'
 import 'dhx-suite/codebase/suite.min.css'
 
-const DhtmlxCompanyGrid = ({ data = [], config = {}, onRowClick }) => {
+const DhtmlxGrid = ({ data = [], config = {}, onRowClick }) => {
   const gridRef = useRef(null)
   const grid = useRef(null)
 
@@ -54,9 +54,9 @@ const DhtmlxCompanyGrid = ({ data = [], config = {}, onRowClick }) => {
       observer.disconnect()
       grid.current?.destructor()
     }
-  }, [data, config]) // theme은 내부 감지 → dependency 불필요
+  }, [data, config])
 
   return <div ref={gridRef} />
 }
 
-export default DhtmlxCompanyGrid
+export default DhtmlxGrid
