@@ -1,7 +1,6 @@
 import React from 'react'
 //////////////////////아키텍처 START
 const BizCodeList = React.lazy(() => import('./views/architecture/BizCodeList'))
-const BizCodeForm = React.lazy(() => import('./views/architecture/BizCodeForm'))
 const RequirementsDefinition = React.lazy(
   () => import('./views/requirements/RequirementsDefinition'),
 )
@@ -65,21 +64,9 @@ const Widgets = React.lazy(() => import('./views/widgets/Widgets'))
 const routes = [
   {
     path: '/architecture/biz-code',
-    name: '계층코드관리',
+    name: '시스템관리',
     element: <BizCodeList />,
     private: true, // 로그인 필요 시
-  },
-  {
-    path: '/architecture/biz-code/new',
-    name: '계층코드 등록',
-    element: <BizCodeForm />,
-    private: true,
-  },
-  {
-    path: '/architecture/biz-code/:id',
-    name: '계층코드 수정',
-    element: <BizCodeForm />,
-    private: true,
   },
   {
     path: '/requirements/definition',

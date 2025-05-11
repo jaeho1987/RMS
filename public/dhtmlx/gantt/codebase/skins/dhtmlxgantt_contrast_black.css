@@ -40,7 +40,6 @@
   /*line-height: 33px;*/
 }
 .gantt_grid_data .gantt_cell{
-  background-color: rgb(45, 48, 57) ;
   border-right: 1px solid #7e7e7e;   /* 아랫줄 보더 */
   color:#fff
 }
@@ -310,7 +309,8 @@
 
 .gantt_row,
 .gantt_task_row {
-  background-color: #000;             /* 기본 행 배경 */
+  background-color: rgb(45, 48, 57) ;
+  /*background-color: #000;             !* 기본 행 배경 *!*/
   border-bottom: 1px solid #7e7e7e;   /* 아랫줄 보더 */
   position: relative;
 }
@@ -321,7 +321,7 @@
 /* 홀수 행도 동일 배경 (원한다면 odd에 다른 색상) */
 .gantt_row.odd,
 .gantt_task_row.odd {
-  background-color: #000;
+  /*background-color: #000;*/
 }
 .gantt_cell,.gantt_grid_head_cell,.gantt_row,.gantt_scale_cell,.gantt_task_cell,.gantt_task_row{
   box-sizing:border-box;
