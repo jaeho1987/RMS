@@ -1,14 +1,14 @@
 import React, { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { useSelector } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux' // ✅ 추가
 
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
-
-// We use those styles to show code examples, you should remove them in your application.
 import './scss/examples.scss'
 import './utils/common.js'
 
+// Spinner
+import AppSpinner from 'src/components/AppSpinner'
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -22,23 +22,30 @@ const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 const App = () => {
   const { isColorModeSet, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
   const storedTheme = useSelector((state) => state.theme)
+  const dispatch = useDispatch() // ✅ Redux 상태 업데이트용
 
   useEffect(() => {
+    // ✅ 시스템 정보 복원
+    const savedSystem = localStorage.getItem('selectedSystem')
+    if (savedSystem) {
+      dispatch({ type: 'set', selectedSystem: JSON.parse(savedSystem) })
+    }
+
+    // ✅ 테마 복원
     const urlParams = new URLSearchParams(window.location.href.split('?')[1])
     const theme = urlParams.get('theme') && urlParams.get('theme').match(/^[A-Za-z0-9\s]+/)[0]
     if (theme) {
       setColorMode(theme)
     }
 
-    if (isColorModeSet()) {
-      return
+    if (!isColorModeSet()) {
+      setColorMode(storedTheme)
     }
-
-    setColorMode(storedTheme)
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <BrowserRouter>
+      <AppSpinner />
       <Suspense
         fallback={
           <div className="pt-3 text-center">

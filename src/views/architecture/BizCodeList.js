@@ -26,8 +26,22 @@ function BizCodeList() {
       label: '설명',
       width: 200,
       editor: { type: 'text', map_to: 'description' }
+    },
+    {
+      name: 'levelNo',
+      label: '레벨',
+      width: 80
+    },
+    {
+      name: 'delete',
+      label: '',
+      width: 40,
+      align: 'center',
+      template: () =>
+        `<span class="delete-icon" style="color:red;cursor:pointer;font-size:16px;">&#10006;</span>`
     }
   ]
+
 
   useEffect(() => {
     axiosInstance.get('/api/biz-code')
@@ -38,6 +52,7 @@ function BizCodeList() {
           text: item.name,
           sysCode: item.sysCode || '',
           description: item.description || '',
+          levelNo: item.levelNo || 1,
           start_date: '2025-01-01',
           duration: 1,
           open: true
@@ -58,8 +73,8 @@ function BizCodeList() {
   }
 
   const validateSysCode = async (sysCode, currentId = null) => {
-    if (!sysCode || sysCode.length > 10) {
-      alert('시스템코드는 필수이며 10자 이하로 입력해야 합니다.')
+    if (sysCode && sysCode.length > 10) {
+      alert('시스템코드는 10자 이하로 입력해야 합니다.')
       return false
     }
 
@@ -96,11 +111,16 @@ function BizCodeList() {
       return
     }
 
+    const parentId = item.parent || 0
+    const parentTask = parentId !== 0 ? window.gantt.getTask(parentId) : null
+    const levelNo = parentTask ? (parentTask.levelNo || 1) + 1 : 1
+
     const newData = {
       name: item.text,
       sysCode,
       description: item.description || '',
-      parentSeq: item.parent || 0,
+      parentSeq: parentId,
+      levelNo,         // ✅ 레벨 저장
       regId: 'admin'
     }
 
@@ -108,6 +128,9 @@ function BizCodeList() {
       .then(res => {
         const realId = res.data
         window.gantt.changeTaskId(tempId, realId)
+        const task = window.gantt.getTask(realId)
+        task.levelNo = levelNo
+        window.gantt.refreshTask(realId)
       })
       .catch(() => {
         alert('등록 실패')
@@ -135,6 +158,7 @@ function BizCodeList() {
       sysCode,
       description: item.description || '',
       modId: 'admin'
+      // ❌ levelNo는 수정에 포함되지 않음
     }
 
     axiosInstance.put(`/api/biz-code/${id}`, updateData)

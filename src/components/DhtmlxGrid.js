@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react'
 import { Grid, setTheme } from 'dhx-suite'
+import PropTypes from 'prop-types'
 import 'dhx-suite/codebase/suite.min.css'
 
-const DhtmlxGrid = ({ data = [], config = {}, onRowClick }) => {
+const DhtmlxGrid = ({ data = [], config = {}, onRowClick, onRowDblClick }) => {
   const gridRef = useRef(null)
   const grid = useRef(null)
 
@@ -37,6 +38,9 @@ const DhtmlxGrid = ({ data = [], config = {}, onRowClick }) => {
     if (onRowClick) {
       grid.current.events.on('cellClick', onRowClick)
     }
+    if (onRowDblClick) {
+      grid.current.events.on('cellDblClick', onRowDblClick)
+    }
 
     grid.current.data.parse(data)
   }
@@ -57,6 +61,13 @@ const DhtmlxGrid = ({ data = [], config = {}, onRowClick }) => {
   }, [data, config])
 
   return <div ref={gridRef} />
+}
+
+DhtmlxGrid.propTypes = {
+  data: PropTypes.array,
+  config: PropTypes.object,
+  onRowClick: PropTypes.func,
+  onRowDblClick: PropTypes.func,
 }
 
 export default DhtmlxGrid

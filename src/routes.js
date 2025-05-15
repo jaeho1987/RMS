@@ -1,9 +1,7 @@
 import React from 'react'
 //////////////////////아키텍처 START
 const BizCodeList = React.lazy(() => import('./views/architecture/BizCodeList'))
-const RequirementsDefinition = React.lazy(
-  () => import('./views/requirements/RequirementsDefinition'),
-)
+const RequirementList = React.lazy(() => import('./views/architecture/RequirementList'))
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
@@ -69,9 +67,9 @@ const routes = [
     private: true, // 로그인 필요 시
   },
   {
-    path: '/requirements/definition',
+    path: '/requirements/requirementList',
     name: '요구사항정의',
-    element: <RequirementsDefinition />,
+    element: <RequirementList />,
     private: true,
   },
   {
