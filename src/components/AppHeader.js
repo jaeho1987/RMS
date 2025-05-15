@@ -38,20 +38,18 @@ const AppHeader = () => {
   const menuList = useSelector((state) => state.menuList)
   const topMenu = useSelector((state) => state.topMenu)
 
-  // 🔍 상단 탭 클릭 시 navigate 먼저, topMenu 설정은 딜레이
   const handleTopMenuClick = (topMenuSeq) => {
     const path = findFirstMenuPath(topMenuSeq)
     if (path) {
-      console.log('🧭 Navigating to:', path)
       navigate(path)
     }
 
     setTimeout(() => {
       dispatch({ type: 'set', topMenu: topMenuSeq })
+      localStorage.setItem('topMenu', topMenuSeq)  // ✅ topMenu 저장
     }, 100)
   }
 
-  // 최하위 path 탐색
   const findFirstMenuPath = (parentSeq) => {
     const children = menuList
       .filter((m) => m.parentSeq === parentSeq)
@@ -99,36 +97,18 @@ const AppHeader = () => {
         </CHeaderNav>
 
         <CHeaderNav className="ms-auto">
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilList} size="lg" />
-            </CNavLink>
-          </CNavItem>
-          <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilEnvelopeOpen} size="lg" />
-            </CNavLink>
-          </CNavItem>
+          <CNavItem><CNavLink href="#"><CIcon icon={cilBell} size="lg" /></CNavLink></CNavItem>
+          <CNavItem><CNavLink href="#"><CIcon icon={cilList} size="lg" /></CNavLink></CNavItem>
+          <CNavItem><CNavLink href="#"><CIcon icon={cilEnvelopeOpen} size="lg" /></CNavLink></CNavItem>
         </CHeaderNav>
 
         <CHeaderNav>
-          <li className="nav-item py-1">
-            <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
-          </li>
+          <li className="nav-item py-1"><div className="vr h-100 mx-2 text-body text-opacity-75"></div></li>
           <CDropdown variant="nav-item" placement="bottom-end">
             <CDropdownToggle caret={false}>
-              {colorMode === 'dark' ? (
-                <CIcon icon={cilMoon} size="lg" />
-              ) : colorMode === 'auto' ? (
-                <CIcon icon={cilContrast} size="lg" />
-              ) : (
-                <CIcon icon={cilSun} size="lg" />
-              )}
+              {colorMode === 'dark' ? <CIcon icon={cilMoon} size="lg" /> :
+                colorMode === 'auto' ? <CIcon icon={cilContrast} size="lg" /> :
+                  <CIcon icon={cilSun} size="lg" />}
             </CDropdownToggle>
             <CDropdownMenu>
               <CDropdownItem active={colorMode === 'light'} onClick={() => setColorMode('light')}>
@@ -142,9 +122,7 @@ const AppHeader = () => {
               </CDropdownItem>
             </CDropdownMenu>
           </CDropdown>
-          <li className="nav-item py-1">
-            <div className="vr h-100 mx-2 text-body text-opacity-75"></div>
-          </li>
+          <li className="nav-item py-1"><div className="vr h-100 mx-2 text-body text-opacity-75"></div></li>
           <AppHeaderDropdown />
         </CHeaderNav>
       </CContainer>

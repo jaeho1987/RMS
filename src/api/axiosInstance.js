@@ -1,14 +1,29 @@
+// src/api/axiosInstance.js
 import axios from 'axios'
+import store from 'src/store'
 
-// 공통 설정 포함된 axios 인스턴스 생성
 const axiosInstance = axios.create({
-  withCredentials: true, // JSESSIONID 전달용
+  withCredentials: true,
 })
 
-// 모든 응답에 대한 공통 처리: 401 → /login
-axiosInstance.interceptors.response.use(
-  response => response,
+axiosInstance.interceptors.request.use(
+  config => {
+    store.dispatch({ type: 'set', loading: true })
+    return config
+  },
   error => {
+    store.dispatch({ type: 'set', loading: false })
+    return Promise.reject(error)
+  }
+)
+
+axiosInstance.interceptors.response.use(
+  response => {
+    store.dispatch({ type: 'set', loading: false })
+    return response
+  },
+  error => {
+    store.dispatch({ type: 'set', loading: false })
     if (error.response?.status === 401) {
       console.warn('🔒 세션 만료됨 → /login 으로 이동')
       window.location.href = '/login'
