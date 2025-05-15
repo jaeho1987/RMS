@@ -38,12 +38,17 @@ function BizCodeList() {
       width: 40,
       align: 'center',
       template: () =>
-        `<span class="delete-icon" style="color:red;cursor:pointer;font-size:16px;">&#10006;</span>`
+        `<svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
+          <use href="/icons/coreui.svg#cil-trash"></use>
+        </svg>`
     }
   ]
 
-
   useEffect(() => {
+    fetchBizCodeList()
+  }, [])
+
+  const fetchBizCodeList = () => {
     axiosInstance.get('/api/biz-code')
       .then(res => {
         const formatted = res.data.map(item => ({
@@ -60,9 +65,9 @@ function BizCodeList() {
         setTreeData(formatted)
       })
       .catch(err => console.error('목록 조회 실패:', err))
-  }, [])
+  }
 
-  const handleNewItem = () => {
+  const handleAddBizCode = () => {
     treeGridRef.current?.addNewItem()
   }
 
@@ -95,7 +100,7 @@ function BizCodeList() {
     return true
   }
 
-  const handleAfterTaskAdd = async (tempId, item) => {
+  const handleAfterAddBizCode = async (tempId, item) => {
     const sysCode = item.sysCode || ''
 
     if (sysCode.length > 10) {
@@ -120,7 +125,7 @@ function BizCodeList() {
       sysCode,
       description: item.description || '',
       parentSeq: parentId,
-      levelNo,         // ✅ 레벨 저장
+      levelNo,
       regId: 'admin'
     }
 
@@ -138,7 +143,7 @@ function BizCodeList() {
       })
   }
 
-  const handleAfterTaskUpdate = async (id, item) => {
+  const handleAfterUpdateBizCode = async (id, item) => {
     const sysCode = item.sysCode || ''
 
     if (sysCode.length > 10) {
@@ -158,7 +163,6 @@ function BizCodeList() {
       sysCode,
       description: item.description || '',
       modId: 'admin'
-      // ❌ levelNo는 수정에 포함되지 않음
     }
 
     axiosInstance.put(`/api/biz-code/${id}`, updateData)
@@ -166,9 +170,9 @@ function BizCodeList() {
       .catch(() => alert('수정 실패'))
   }
 
-  const handleBeforeTaskDelete = () => true
+  const handleBeforeDeleteBizCode = () => true
 
-  const handleClickDelete = (id) => {
+  const handleDeleteBizCode = (id) => {
     if (window.gantt.hasChild(id)) {
       alert('하위 항목이 있어 삭제할 수 없습니다.')
       return
@@ -181,7 +185,7 @@ function BizCodeList() {
       .catch(() => alert('삭제 실패'))
   }
 
-  const handleSaveOrder = (rawList) => {
+  const handleSaveBizCodeOrder = (rawList) => {
     const mapped = rawList.map(item => ({
       bizSeq: item.id,
       orderNo: item.index
@@ -198,7 +202,7 @@ function BizCodeList() {
           <div className="text-body-secondary align-self-center" style={{ fontSize: '0.85rem' }}>
             행 선택 후 클릭 시 해당 행의 하위에 추가됩니다.
           </div>
-          <CButton color="success" onClick={handleNewItem}>
+          <CButton color="success" onClick={handleAddBizCode}>
             신규 등록
           </CButton>
         </div>
@@ -211,11 +215,11 @@ function BizCodeList() {
             ref={treeGridRef}
             data={treeData}
             columns={columns}
-            onAfterTaskAdd={handleAfterTaskAdd}
-            onAfterTaskUpdate={handleAfterTaskUpdate}
-            onBeforeTaskDelete={handleBeforeTaskDelete}
-            onClickDelete={handleClickDelete}
-            onSaveOrder={handleSaveOrder}
+            onAfterAddRow={handleAfterAddBizCode}
+            onAfterUpdateRow={handleAfterUpdateBizCode}
+            onBeforeDeleteRow={handleBeforeDeleteBizCode}
+            onClickDeleteRow={handleDeleteBizCode}
+            onSaveRowOrder={handleSaveBizCodeOrder}
             style={{ width: '100%', height: '100%' }}
           />
         </div>

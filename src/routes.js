@@ -7,8 +7,8 @@ const RequirementsTracking = React.lazy(() => import('./views/requirements/Requi
 //////////////////////시스템관리 START
 const UserManagement = React.lazy(() => import('./views/system/UserManagement'))
 const CommonCodeList = React.lazy(() => import('./views/system/CommonCodeList'))
-const CompanyList = React.lazy(() => import('./views/company/CompanyList'))
-const CompanyForm = React.lazy(() => import('./views/company/CompanyForm'))
+const CompanyList = React.lazy(() => import('./views/system/CompanyList'))
+const CompanyForm = React.lazy(() => import('./views/system/CompanyForm'))
 const UserList = React.lazy(() => import('./views/user/UserList'))
 const UserForm = React.lazy(() => import('./views/user/UserForm'))
 const MenuList = React.lazy(() => import('./views/system/MenuList'))

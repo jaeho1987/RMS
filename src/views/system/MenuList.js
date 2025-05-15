@@ -26,10 +26,24 @@ function MenuList() {
       label: '아이콘',
       width: 150,
       editor: { type: 'text', map_to: 'menuIcon' }
+    },
+    {
+      name: 'delete',
+      label: '',
+      width: 40,
+      align: 'center',
+      template: () =>
+        `<svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
+          <use href="/icons/coreui.svg#cil-trash"></use>
+        </svg>`
     }
   ]
 
   useEffect(() => {
+    fetchMenuList()
+  }, [])
+
+  const fetchMenuList = () => {
     axiosInstance.get('/api/menus')
       .then(res => {
         const formatted = res.data.map((item) => ({
@@ -45,13 +59,13 @@ function MenuList() {
         setTreeData(formatted)
       })
       .catch(err => console.error('메뉴 조회 실패:', err))
-  }, [])
+  }
 
-  const handleNewItem = () => {
+  const handleAddMenu = () => {
     treeGridRef.current?.addNewItem()
   }
 
-  const handleAfterTaskAdd = (tempId, item) => {
+  const handleAfterAddMenu = (tempId, item) => {
     const newData = {
       menuName: item.text,
       menuPath: item.menuPath || '',
@@ -71,7 +85,7 @@ function MenuList() {
       })
   }
 
-  const handleAfterTaskUpdate = (id, item) => {
+  const handleAfterUpdateMenu = (id, item) => {
     const updateData = {
       menuName: item.text,
       menuPath: item.menuPath || '',
@@ -84,9 +98,9 @@ function MenuList() {
       .catch(() => alert('수정 실패'))
   }
 
-  const handleBeforeTaskDelete = () => true
+  const handleBeforeDeleteMenu = () => true
 
-  const handleClickDelete = (id) => {
+  const handleDeleteMenu = (id) => {
     if (window.gantt.hasChild(id)) {
       alert('하위 메뉴가 있어 삭제할 수 없습니다.')
       return
@@ -99,7 +113,7 @@ function MenuList() {
       .catch(() => alert('삭제 실패'))
   }
 
-  const handleSaveOrder = (rawList) => {
+  const handleSaveMenuOrder = (rawList) => {
     const mapped = rawList.map(item => ({
       menuSeq: item.id,
       menuOrder: item.index
@@ -109,6 +123,17 @@ function MenuList() {
       .catch(() => alert('정렬 저장 실패'))
   }
 
+  const handleClickMenuRow = (id, e) => {
+    const target = e.target || e.srcElement
+    const svg = target.closest('svg')
+    const cls = svg?.classList?.value || ''
+
+    if (cls.includes('icon-delete')) {
+      handleDeleteMenu(id)
+      return true
+    }
+  }
+
   return (
     <CCard>
       <CCardBody className="p-0" style={{ height: '700px' }}>
@@ -116,7 +141,7 @@ function MenuList() {
           <div className="text-body-secondary" style={{ fontSize: '0.85rem' }}>
             행 선택 후 클릭 시 해당 행의 하위에 추가됩니다.
           </div>
-          <CButton color="success" onClick={handleNewItem}>
+          <CButton color="success" onClick={handleAddMenu}>
             신규 등록
           </CButton>
         </div>
@@ -129,11 +154,12 @@ function MenuList() {
             ref={treeGridRef}
             data={treeData}
             columns={columns}
-            onAfterTaskAdd={handleAfterTaskAdd}
-            onAfterTaskUpdate={handleAfterTaskUpdate}
-            onBeforeTaskDelete={handleBeforeTaskDelete}
-            onClickDelete={handleClickDelete}
-            onSaveOrder={handleSaveOrder}
+            onAfterAddRow={handleAfterAddMenu}
+            onAfterUpdateRow={handleAfterUpdateMenu}
+            onBeforeDeleteRow={handleBeforeDeleteMenu}
+            onClickDeleteRow={handleDeleteMenu}
+            onClickRow={handleClickMenuRow}
+            onSaveRowOrder={handleSaveMenuOrder}
             style={{ width: '100%', height: '100%' }}
           />
         </div>

@@ -1,3 +1,16 @@
+## 메서드 네이밍 컨벤션
+
+- 데이터 조회: `fetch` + 대상 (예: `fetchCompanyList`)
+- 신규 등록: `handleAdd` 또는 `handleCreate` + 대상 (예: `handleAddCompany`)
+- 수정 저장: `handleUpdate` + 대상 (예: `handleUpdateCompany`)
+- 삭제: `handleDelete` + 대상 (예: `handleDeleteCompany`)
+- 입력값 변경: `handleChange` + 대상 (예: `handleChangeInput`)
+- 팝업 열기/닫기: `handleOpen`/`handleClose` + 대상 (예: `handleOpenModal`)
+- 클릭 이벤트: `handleClick` + 대상 (예: `handleClickRow`)
+- 선택 처리: `handleSelect` + 대상 (예: `handleSelectSystem`)
+- 초기화: `reset` + 대상 (예: `resetForm`)
+- 
+
 # Contributing to CoreUI
 
 Looking to contribute something to CoreUI? **Here's how you can help.**

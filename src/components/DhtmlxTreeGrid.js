@@ -10,12 +10,12 @@ import { setGanttSkin } from './setGanttSkin'
 const DhtmlxTreeGrid = forwardRef(({
                                      data = [],
                                      columns = [],
-                                     onAfterTaskAdd,
-                                     onAfterTaskUpdate,
-                                     onBeforeTaskDelete,
-                                     onClickDelete,
-                                     onSaveOrder,
-                                     onRowClick,
+                                     onAfterAddRow,
+                                     onAfterUpdateRow,
+                                     onBeforeDeleteRow,
+                                     onClickDeleteRow,
+                                     onSaveRowOrder,
+                                     onClickRow,
                                      onRowDblClick,
                                      dragMove = true,
                                      orderBranch = true,
@@ -25,6 +25,7 @@ const DhtmlxTreeGrid = forwardRef(({
   const ganttContainerRef = useRef(null)
   const initializedRef = useRef(false)
   const eventIDsRef = useRef([])
+  let previousSelectedId = null
 
   useEffect(() => {
     if (!window.gantt || initializedRef.current) return
@@ -33,7 +34,7 @@ const DhtmlxTreeGrid = forwardRef(({
     const gantt = window.gantt
 
     gantt.config.editable = true
-    gantt.config.edit_on_dblclick = true
+    gantt.config.edit_on_dblclick = false
     gantt.config.details_on_dblclick = false
     gantt.config.select_task = true
     gantt.config.show_chart = false
@@ -41,32 +42,41 @@ const DhtmlxTreeGrid = forwardRef(({
     gantt.config.order_branch = orderBranch
     gantt.config.order_branch_free = orderBranchFree
 
-    gantt.config.columns = [...columns]  // ❌ 자동 삭제 컬럼 추가 제거
+    gantt.config.columns = [...columns]
 
     setGanttSkin(getCoreUITheme())
 
-    // 이벤트 등록
     eventIDsRef.current.push(
       gantt.attachEvent('onTaskClick', (id, e) => {
         const target = e.target || e.srcElement
-        const cls = target.className || ''
+        const svg = target.closest('svg')
+        const cls = svg?.classList?.value || ''
 
-        if (cls.includes('delete-icon')) {
-          onClickDelete?.(id)
+        if (cls.includes('icon-delete') || cls.includes('delete-icon')) {
+          onClickDeleteRow?.(id)
           return true
         }
 
         const inlineAPI = gantt.ext?.inlineEditors
-        if (inlineAPI?.isVisible()) inlineAPI.save()
+
+        if (inlineAPI?.isVisible() && previousSelectedId !== id) {
+          inlineAPI.save()
+        }
 
         gantt.selectTask(id)
-        onRowClick?.(id, e)
+        previousSelectedId = id
+        onClickRow?.(id, e)
+
         return true
       })
     )
 
     eventIDsRef.current.push(
       gantt.attachEvent('onTaskDblClick', (id, e) => {
+        const column = e.target.closest('.gantt_cell')?.getAttribute('data-column-name')
+        if (column) {
+          gantt.showInlineEditor(id, column)
+        }
         onRowDblClick?.(id, e)
         return false
       })
@@ -74,19 +84,19 @@ const DhtmlxTreeGrid = forwardRef(({
 
     eventIDsRef.current.push(
       gantt.attachEvent('onAfterTaskAdd', (id, item) => {
-        onAfterTaskAdd?.(id, item)
+        onAfterAddRow?.(id, item)
       })
     )
 
     eventIDsRef.current.push(
       gantt.attachEvent('onAfterTaskUpdate', (id, item) => {
-        onAfterTaskUpdate?.(id, item)
+        onAfterUpdateRow?.(id, item)
       })
     )
 
     eventIDsRef.current.push(
       gantt.attachEvent('onBeforeTaskDelete', (id, item) => {
-        return onBeforeTaskDelete?.(id, item) !== false
+        return onBeforeDeleteRow?.(id, item) !== false
       })
     )
 
@@ -100,7 +110,7 @@ const DhtmlxTreeGrid = forwardRef(({
             parent: task.parent
           })
         })
-        onSaveOrder?.(rawList)
+        onSaveRowOrder?.(rawList)
       })
     )
 
@@ -164,6 +174,13 @@ const DhtmlxTreeGrid = forwardRef(({
     },
     refreshTask(id) {
       return window.gantt.refreshTask(id)
+    },
+    updateTask(id, updatedFields) {
+      const task = window.gantt.getTask(id)
+      if (task) {
+        Object.assign(task, updatedFields)
+        window.gantt.updateTask(id)
+      }
     }
   }))
 
@@ -181,12 +198,12 @@ const DhtmlxTreeGrid = forwardRef(({
 DhtmlxTreeGrid.propTypes = {
   data: PropTypes.array,
   columns: PropTypes.array,
-  onAfterTaskAdd: PropTypes.func,
-  onAfterTaskUpdate: PropTypes.func,
-  onBeforeTaskDelete: PropTypes.func,
-  onClickDelete: PropTypes.func,
-  onSaveOrder: PropTypes.func,
-  onRowClick: PropTypes.func,
+  onAfterAddRow: PropTypes.func,
+  onAfterUpdateRow: PropTypes.func,
+  onBeforeDeleteRow: PropTypes.func,
+  onClickDeleteRow: PropTypes.func,
+  onSaveRowOrder: PropTypes.func,
+  onClickRow: PropTypes.func,
   onRowDblClick: PropTypes.func,
   dragMove: PropTypes.bool,
   orderBranch: PropTypes.bool,

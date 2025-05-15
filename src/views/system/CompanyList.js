@@ -9,23 +9,42 @@ const CompanyList = () => {
   const [filter, setFilter] = useState({ companyName: '', bizNo: '', telNo: '' })
   const [data, setData] = useState([])
 
-  const fetchData = async () => {
-      const res = await axiosInstance.get('/api/system/companies', { params: filter })
+  const fetchCompanyList = async () => {
+    const res = await axiosInstance.get('/api/system/companies', { params: filter })
     setData(res.data)
   }
 
   useEffect(() => {
-    fetchData()
+    fetchCompanyList()
   }, [])
 
-  const handleChange = (e) => {
+  const handleChangeFilter = (e) => {
     const { name, value } = e.target
     setFilter((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSearch = (e) => {
+  const handleSearchCompany = (e) => {
     e.preventDefault()
-    fetchData()
+    fetchCompanyList()
+  }
+
+  const handleDeleteCompany = async (id) => {
+    if (!window.confirm('삭제하시겠습니까?')) return
+
+    try {
+      await axiosInstance.delete(`/api/system/companies/${id}`)
+      fetchCompanyList()
+    } catch (err) {
+      alert('삭제 실패')
+    }
+  }
+
+  const handleRowClick = (row, col) => {
+    if (col?.id === 'delete') {
+      handleDeleteCompany(row.companySeq)
+    } else {
+      navigate(`/system/company/${row.companySeq}`)
+    }
   }
 
   const gridConfig = {
@@ -37,6 +56,16 @@ const CompanyList = () => {
       { id: 'bizNo', header: [{ text: '사업자번호' }], width: 150 },
       { id: 'telNo', header: [{ text: '전화번호' }], width: 150 },
       { id: 'address', header: [{ text: '주소' }], fillspace: true },
+      {
+        id: 'delete',
+        header: [{ text: '' }],
+        width: 60,
+        htmlEnable: true,
+        template: () =>
+          `<svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
+            <use href="/icons/coreui.svg#cil-trash"></use>
+          </svg>`
+      }
     ],
   }
 
@@ -44,14 +73,14 @@ const CompanyList = () => {
     <>
       <CCard className="mb-3">
         <CCardBody>
-          <CForm onSubmit={handleSearch}>
+          <CForm onSubmit={handleSearchCompany}>
             <CRow className="mb-2">
               <CCol md={4}>
                 <CFormInput
                   label="회사명"
                   name="companyName"
                   value={filter.companyName}
-                  onChange={handleChange}
+                  onChange={handleChangeFilter}
                 />
               </CCol>
               <CCol md={4}>
@@ -59,7 +88,7 @@ const CompanyList = () => {
                   label="사업자번호"
                   name="bizNo"
                   value={filter.bizNo}
-                  onChange={handleChange}
+                  onChange={handleChangeFilter}
                 />
               </CCol>
               <CCol md={4}>
@@ -67,7 +96,7 @@ const CompanyList = () => {
                   label="전화번호"
                   name="telNo"
                   value={filter.telNo}
-                  onChange={handleChange}
+                  onChange={handleChangeFilter}
                 />
               </CCol>
             </CRow>
@@ -90,7 +119,7 @@ const CompanyList = () => {
           <DhtmlxGrid
             data={data}
             config={gridConfig}
-            onRowClick={(row) => navigate(`/system/company/${row.companySeq}`)}
+            onRowClick={handleRowClick}
           />
         </CCardBody>
       </CCard>
