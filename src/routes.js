@@ -2,16 +2,18 @@ import React from 'react'
 //////////////////////아키텍처 START
 const BizCodeList = React.lazy(() => import('./views/architecture/BizCodeList'))
 const RequirementList = React.lazy(() => import('./views/architecture/RequirementList'))
+const RequirementForm = React.lazy(() => import('./views/architecture/RequirementForm'))
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
 const UserManagement = React.lazy(() => import('./views/system/UserManagement'))
 const CommonCodeList = React.lazy(() => import('./views/system/CommonCodeList'))
-const CompanyList = React.lazy(() => import('./views/company/CompanyList'))
-const CompanyForm = React.lazy(() => import('./views/company/CompanyForm'))
+const CompanyList = React.lazy(() => import('./views/system/CompanyList'))
+const CompanyForm = React.lazy(() => import('./views/system/CompanyForm'))
 const UserList = React.lazy(() => import('./views/user/UserList'))
 const UserForm = React.lazy(() => import('./views/user/UserForm'))
 const MenuList = React.lazy(() => import('./views/system/MenuList'))
+const DevGuide = React.lazy(() => import('./views/system/DevGuide'))
 //////////////////////시스템관리 종료
 //////////////////////coreUI START
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
@@ -73,6 +75,12 @@ const routes = [
     private: true,
   },
   {
+    path: '/requirement/:seq',
+    name: '요구사항수정',
+    element: <RequirementForm />,
+    private: true,
+  },
+  {
     path: '/requirements/tracking',
     name: '요구사항추적',
     element: <RequirementsTracking />,
@@ -91,6 +99,7 @@ const routes = [
   { path: '/system/user/new', name: '회사등록', element: <UserForm />, private: true },
   { path: '/system/user/:id', name: '회사수정', element: <UserForm />, private: true },
   { path: '/system/commonCode', name: '공통코드관리', element: <CommonCodeList />, private: true },
+  { path: '/system/devGuide', name: '공통코드관리', element: <DevGuide />, private: true },
   { path: '/', exact: true, name: 'Home', element: <Dashboard />, private: true },
   { path: '/dashboard', name: 'Dashboard', element: <Dashboard />, private: true },
   { path: '/theme', name: 'Theme', element: <Colors />, exact: true, private: true },
