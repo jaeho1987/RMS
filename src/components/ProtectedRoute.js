@@ -7,13 +7,13 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     axios
-      .get('/api/me', { withCredentials: true })
+      .get('/api/auth/me')
       .then(() => setIsAuthenticated(true))
       .catch(() => setIsAuthenticated(false))
   }, [])
 
   if (isAuthenticated === null) {
-    return <div>로딩 중...</div> // 또는 스피너 넣어도 됨
+    return <div>로딩 중...</div>
   }
 
   if (!isAuthenticated) {

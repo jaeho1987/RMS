@@ -4,7 +4,11 @@ import axiosInstance from 'src/api/axiosInstance';
 
 const DevGuide = () => {
   const [filter, setFilter] = useState({ tableName: '', path: 'architecture' });
-  const [generatedXml, setGeneratedXml] = useState('');
+  const [generatedSource, setgeneratedSource] = useState('');
+  const [camelCaseTableName, setCamelCaseTableName] = useState('');
+  const [camelCaseTableNameUpper, setCamelCaseTableNameUpper] = useState('');
+  const [camelCaseTableNameWithoutTb, setCamelCaseTableNameWithoutTb] = useState('');
+  const [camelCaseTableNameWithoutTbUpper, setCamelCaseTableNameWithoutTbUpper] = useState('');
 
   const paths = [
     { id: 'architecture', name: '아키텍처' },
@@ -14,7 +18,45 @@ const DevGuide = () => {
 
   const handleChangeFilter = (e) => {
     const { name, value } = e.target;
-    setFilter((prev) => ({ ...prev, [name]: value }));
+    setFilter((prev) => {
+      const updatedFilter = { ...prev, [name]: value };
+      if (name === 'tableName') {
+        updateTableNameState(updatedFilter.tableName);  // 테이블명이 변경될 때마다 상태 업데이트
+      }
+      return updatedFilter;
+    });
+  };
+
+  const updateTableNameState = (tableName) => {
+    const upperTableName = tableName.toUpperCase();
+    // 카멜 표기법으로 변환하는 부분
+    const camelCaseTableName = upperTableName
+      .split('_')
+      .map((word, index) => {
+        return index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join('');
+
+    // 첫 번째 글자를 대문자로 변경한 카멜 표기법
+    const camelCaseTableNameUpper = camelCaseTableName.charAt(0).toUpperCase() + camelCaseTableName.slice(1);
+
+    // 'tb_'를 제거하고 카멜 표기법으로만 변경한 테이블명
+    const camelCaseTableNameWithoutTb = tableName
+      .replace(/^TB_/, '')
+      .split('_')
+      .map((word, index) => {
+        return index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      })
+      .join('');
+
+    // 'tb_'를 제거하고 카멜 표기법으로만 변경한 테이블명에서 첫 번째 글자를 대문자로 변경
+    const camelCaseTableNameWithoutTbUpper = camelCaseTableNameWithoutTb.charAt(0).toUpperCase() + camelCaseTableNameWithoutTb.slice(1);
+
+    // 상태 업데이트
+    setCamelCaseTableName(camelCaseTableName);
+    setCamelCaseTableNameUpper(camelCaseTableNameUpper);
+    setCamelCaseTableNameWithoutTb(camelCaseTableNameWithoutTb);
+    setCamelCaseTableNameWithoutTbUpper(camelCaseTableNameWithoutTbUpper);
   };
 
   const fetchColumns = async () => {
@@ -29,146 +71,154 @@ const DevGuide = () => {
     }
   };
 
-  const generateCrudSql = (columns) => {
-    if (!columns || columns.length === 0) return;
+  const generateControllerCode = (camelCaseColumns) => {
+    return `
+package com.smart.rms.${filter.path}.controller;
 
-    let tableName = filter.tableName.toUpperCase();
+import com.smart.rms.${filter.path}.model.${camelCaseTableNameUpper};
+import com.smart.rms.${filter.path}.service.${camelCaseTableNameWithoutTbUpper}Service;
+import com.smart.rms.util.ApiUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import lombok.RequiredArgsConstructor;
 
-    // 카멜 표기법으로 변환하는 부분
-    const camelCaseTableName = tableName
-      .replace(/^tb_/, '')  // 'tb_' 제거
-      .split('_')
-      .map((word, index) => {
-        return index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join('');
+import java.util.List;
 
-    // 첫 번째 글자를 대문자로 변경한 카멜 표기법
-    const camelCaseTableNameUpper = camelCaseTableName.charAt(0).toUpperCase() + camelCaseTableName.slice(1);
+@Slf4j
+@RestController
+@RequestMapping("/api/${camelCaseTableNameWithoutTb}")
+@RequiredArgsConstructor
+public class ${camelCaseTableNameWithoutTbUpper}Controller {
 
-    // 'tb_'를 제거하고 카멜 표기법으로만 변경한 테이블명
-    const camelCaseTableNameWithoutTb = tableName
-      .replace(/^tb_/, '')
-      .split('_')
-      .map((word, index) => {
-        return index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      })
-      .join('');
+    private final ${camelCaseTableNameWithoutTbUpper}Service ${camelCaseTableNameWithoutTb}Service;
 
-    // 'tb_'를 제거하고 카멜 표기법으로만 변경한 테이블명에서 첫 번째 글자를 대문자로 변경
-    const camelCaseTableNameWithoutTbUpper = camelCaseTableNameWithoutTb.charAt(0).toUpperCase() + camelCaseTableNameWithoutTb.slice(1);
+    @GetMapping
+    public List<${camelCaseTableNameUpper}> findByKeyword(@ModelAttribute ${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        return ${camelCaseTableNameWithoutTb}Service.findByKeyword(${camelCaseTableNameWithoutTb});
+    }
 
-    const modelPath = filter.path;
+    @GetMapping("/{id}")
+    public ${camelCaseTableNameUpper} findById(@PathVariable Long id) {
+        return ${camelCaseTableNameWithoutTb}Service.findById(id);
+    }
 
-    // mapperNamespace에서 'tb_'만 제거하고, 카멜 표기법을 그대로 유지
-    const mapperNamespace = `com.smart.rms.${modelPath}.mapper.${camelCaseTableNameWithoutTb}Mapper`;
+    @PostMapping
+    public ResponseEntity<?> insert(@RequestBody ${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        ${camelCaseTableNameWithoutTb}.setDelYn("N");
+        return ApiUtil.success(${camelCaseTableNameWithoutTb}Service.insert(${camelCaseTableNameWithoutTb}));
+    }
 
-    // modelClass에 카멜 표기법 테이블명을 적용한 모델 클래스명
-    const modelClass = `com.smart.rms.${modelPath}.model.${camelCaseTableNameUpper}`;
+    @PutMapping("/{id}")
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody ${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        ${camelCaseTableNameWithoutTb}.set${camelCaseColumns[0].charAt(0).toUpperCase() + camelCaseColumns[0].slice(1)}(id);
+        return ApiUtil.success(${camelCaseTableNameWithoutTb}Service.update(${camelCaseTableNameWithoutTb}));
+    }
 
-    // 컬럼 이름을 카멜 표기법으로 변환 (컬럼명: 데이터타입 맵핑)
-    const camelCaseColumns = columns.map(col => {
-      return col.column_name.split('_').map((word, idx) => {
-        return idx === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-      }).join('');
-    });
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        return ApiUtil.success(${camelCaseTableNameWithoutTb}Service.delete(id));
+    }
 
-    // SQL 쿼리 생성 함수
-    // SQL 쿼리 생성 함수
-    const createSql = (type) => {
-      const commonFields = columns.map(col => `${col.column_name.toUpperCase()}`).join(',\n    ');
-
-      if (type === 'select') {
-        return `
-<!-- 전체 조회 -->
-<select id="findAll" resultType="${modelClass}">
-    SELECT
-    ${commonFields}
-    FROM ${tableName}
-    WHERE 1=1
-    AND DEL_YN = 'N'
-    ORDER BY ${columns[0].column_name.toUpperCase()} ASC
-</select>`;
-      }
-
-      if (type === 'insert') {
-        const valueFields = camelCaseColumns.map(col => `#{${col}}`).join(',\n    ');
-        return `
-<!-- 등록 -->
-<insert id="insert" parameterType="${modelClass}">
-    <selectKey keyProperty="userId" resultType="long" order="BEFORE">
-        SELECT nextval('${tableName.toLowerCase()}_seq')
-    </selectKey>
-    INSERT INTO ${tableName} (
-    ${commonFields}
-    )
-    VALUES (
-    ${valueFields}
-    )
-</insert>`;
-      }
-
-      if (type === 'update') {
-        const updateFields = columns.map((col, idx) => `
-    <if test="${camelCaseColumns[idx]} != null">
-        , ${col.column_name.toUpperCase()} = #{${camelCaseColumns[idx]}}
-    </if>`).join('');
-        return `
-<!-- 수정 -->
-<update id="update" parameterType="${modelClass}">
-    UPDATE ${tableName}
-    SET MOD_DT = CURRENT_TIMESTAMP
-    ${updateFields}
-    WHERE ${columns[0].column_name.toUpperCase()} = #{${camelCaseColumns[0]}}
-</update>`;
-      }
-
-      if (type === 'delete') {
-        return `
-<!-- 삭제 -->
-<update id="deleteById">
-    UPDATE ${tableName}
-    SET DEL_YN = 'Y', MOD_ID = 'system', MOD_DT = CURRENT_TIMESTAMP
-    WHERE ${columns[0].column_name.toUpperCase()} = #{${camelCaseColumns[0]}}
-</update>`;
-      }
-    };
-
-    // 모든 SQL 쿼리 생성
-    const mapperXml = `
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-
-<mapper namespace="${mapperNamespace}">
-    ${createSql('select')}
-    ${createSql('insert')}
-    ${createSql('update')}
-    ${createSql('delete')}
-</mapper>
+    @PutMapping("/order")
+    public ResponseEntity<?> updateOrderBatch(@RequestBody List<${camelCaseTableNameUpper}> list) {
+        int result = ${camelCaseTableNameWithoutTb}Service.updateOrderBatch(list);
+        return ApiUtil.success(result); // 성공 건수 반환
+    }
+}
 `;
+  };
 
-    setGeneratedXml(`
-1. model
-${generateModelCode(columns, modelClass)}
-2. controller
-${generateControllerCode(modelClass, camelCaseTableNameWithoutTb, camelCaseTableNameWithoutTbUpper)}
-3. service
-${generateServiceCode(modelClass, camelCaseTableNameWithoutTb, camelCaseTableNameWithoutTbUpper)}
-4. mapper
-${generateMapperCode(modelClass, camelCaseTableNameWithoutTb)}
-5. mapper.xml
-${mapperXml}
-`);
+  const generateServiceCode = (camelCaseColumns) => {
+    return `
+package com.smart.rms.${filter.path}.service;
+
+import com.smart.rms.${filter.path}.model.${camelCaseTableNameUpper};
+import com.smart.rms.${filter.path}.mapper.${camelCaseTableNameWithoutTbUpper}Mapper;
+import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ${camelCaseTableNameWithoutTbUpper}Service {
+
+    private final ${camelCaseTableNameWithoutTbUpper}Mapper ${camelCaseTableNameWithoutTb}Mapper;
+
+    public List<${camelCaseTableNameUpper}> findByKeyword(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        return ${camelCaseTableNameWithoutTb}Mapper.findByKeyword(${camelCaseTableNameWithoutTb});
+    }
+
+    public ${camelCaseTableNameUpper} findById(Long id) {
+        return ${camelCaseTableNameWithoutTb}Mapper.findById(id);
+    }
+
+    public ${camelCaseTableNameUpper} insert(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        ${camelCaseTableNameWithoutTb}Mapper.insert(${camelCaseTableNameWithoutTb});
+        return  ${camelCaseTableNameWithoutTb}Mapper.findById(${camelCaseTableNameWithoutTb}.get${camelCaseColumns[0].charAt(0).toUpperCase() + camelCaseColumns[0].slice(1)}());
+    }
+
+    public int update(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb}) {
+        return ${camelCaseTableNameWithoutTb}Mapper.update(${camelCaseTableNameWithoutTb});
+    }
+
+    public int  delete(Long id) {
+        return ${camelCaseTableNameWithoutTb}Mapper.deleteById(id);
+    }
+
+    public int updateOrderBatch(List<${camelCaseTableNameUpper}> list) {
+        if (list == null || list.isEmpty()) return 0;
+        int count = 0;
+        for (${camelCaseTableNameUpper} item : list) {
+            count += ${camelCaseTableNameWithoutTb}Mapper.updateOrderOne(item);
+        }
+        return count;
+    }
+}
+`;
+  };
+
+  const generateMapperCode = () => {
+    return `
+package com.smart.rms.${filter.path}.mapper;
+
+import com.smart.rms.${filter.path}.model.${camelCaseTableNameUpper};
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+@Mapper
+public interface ${camelCaseTableNameWithoutTbUpper}Mapper {
+
+    List<${camelCaseTableNameUpper}> findByKeyword(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb});
+    ${camelCaseTableNameUpper} findById(@Param("id") Long id);
+    int insert(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb});
+    int update(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb});
+    int deleteById(@Param("id") Long id);
+    int updateOrderOne(${camelCaseTableNameUpper} ${camelCaseTableNameWithoutTb});
+}
+`;
   };
 
   const generateModelCode = (columns, modelClass) => {
     return `
 package com.smart.rms.${filter.path}.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
-import java.util.Date;
+import lombok.NoArgsConstructor;
+import java.util.Date;npm
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ${modelClass} {
   ${columns.map(col => {
       const columnName = col.column_name;
@@ -185,117 +235,133 @@ public class ${modelClass} {
 `;
   };
 
-  const generateControllerCode = (modelClass, camelCaseTableNameWithoutTb, camelCaseTableNameWithoutTbUpper) => {
-    return `
-package com.smart.rms.${filter.path}.controller;
+  const generateCrudSql = (columns) => {
+    if (!columns || columns.length === 0) return;
 
-import com.smart.rms.${filter.path}.model.${modelClass};
-import com.smart.rms.${filter.path}.service.${camelCaseTableNameWithoutTbUpper}Service;
-import org.springframework.web.bind.annotation.*;
-import lombok.RequiredArgsConstructor;
+    let tableName = filter.tableName.toUpperCase();
 
-import java.util.List;
+    // 컬럼 이름을 카멜 표기법으로 변환 (컬럼명: 데이터타입 맵핑)
+    const camelCaseColumns = columns.map(col => {
+      return col.column_name.split('_').map((word, idx) => {
+        return idx === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+      }).join('');
+    });
 
-@RestController
-@RequestMapping("/${camelCaseTableNameWithoutTb}")
-@RequiredArgsConstructor
-public class ${camelCaseTableNameWithoutTbUpper}Controller {
+    // SQL 쿼리 생성 함수
+    const createSql = (type) => {
+      const commonFields = columns.map(col => `${col.column_name.toUpperCase()}`).join('\n     , ');
 
-    private final ${camelCaseTableNameWithoutTbUpper}Service ${camelCaseTableNameWithoutTb}Service;
+      if (type === 'findByKeyword') {
+        return `
+<select id="findByKeyword" resultType="${camelCaseTableNameUpper}">
+    SELECT /* ${camelCaseTableNameWithoutTbUpper}Mapper.findByKeyword */
+         ${commonFields}
+    FROM ${tableName}
+    WHERE 1=1
+    AND DEL_YN = 'N'
+    ORDER BY ${columns[0].column_name.toUpperCase()} ASC
+</select>`;
+      }
 
-    @GetMapping("/")
-    public List<${modelClass}> findAll() {
-        return ${camelCaseTableNameWithoutTb}Service.findAll();
-    }
+      if (type === 'findById') {
+        return `
+<select id="findById" resultType="${camelCaseTableNameUpper}">
+    SELECT /* ${camelCaseTableNameWithoutTbUpper}Mapper.findById */
+         ${commonFields}
+    FROM ${tableName}
+    WHERE 1=1
+    AND DEL_YN = 'N'
+    AND ${columns[0].column_name.toUpperCase()} = #{id}
+</select>`;
+      }
 
-    @GetMapping("/{id}")
-    public ${modelClass} findById(@PathVariable Long id) {
-        return ${camelCaseTableNameWithoutTb}Service.findById(id);
-    }
+      if (type === 'insert') {
+        const valueFields = camelCaseColumns.map(col => `#{${col}}`).join('\n      , ');
+        return `
+<insert id="insert" parameterType="${camelCaseTableNameUpper}">
+    <selectKey keyProperty="userId" resultType="long" order="BEFORE">
+        SELECT nextval('seq_${filter.tableName.toLowerCase().replace(/^tb_/, '')}')
+    </selectKey>
+    INSERT INTO ${tableName} ( /* ${camelCaseTableNameWithoutTbUpper}Mapper.insert */
+         ${commonFields}
+    )
+    VALUES (
+        ${valueFields}
+    )
+</insert>`;
+      }
 
-    @PostMapping("/")
-    public ${modelClass} save(@RequestBody ${modelClass} ${camelCaseTableNameWithoutTb}) {
-        return ${camelCaseTableNameWithoutTb}Service.save(${camelCaseTableNameWithoutTb});
-    }
+      if (type === 'update') {
+        const updateFields = columns.slice(1).map((col, idx) => `
+    <if test="${camelCaseColumns[idx + 1]} != null">
+        , ${col.column_name.toUpperCase()} = #{${camelCaseColumns[idx + 1]}}
+    </if>`).join('');
 
-    @PutMapping("/{id}")
-    public ${modelClass} update(@PathVariable Long id, @RequestBody ${modelClass} ${camelCaseTableNameWithoutTb}) {
-        return ${camelCaseTableNameWithoutTb}Service.update(id, ${camelCaseTableNameWithoutTb});
-    }
+        return `
+<update id="update" parameterType="${camelCaseTableNameUpper}">
+    UPDATE ${tableName}    /* ${camelCaseTableNameWithoutTbUpper}Mapper.update */
+    SET MOD_DT = CURRENT_TIMESTAMP${updateFields}
+    WHERE ${columns[0].column_name.toUpperCase()} = #{${camelCaseColumns[0]}}
+</update>`;
+      }
 
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        ${camelCaseTableNameWithoutTb}Service.delete(id);
-    }
-}
+      if (type === 'delete') {
+        return `
+<update id="deleteById">
+    UPDATE ${tableName} /* ${camelCaseTableNameWithoutTbUpper}Mapper.deleteById */
+    SET DEL_YN = 'Y'
+      , MOD_ID = 'system'
+      , MOD_DT = CURRENT_TIMESTAMP
+    WHERE ${columns[0].column_name.toUpperCase()} = #{id}
+</update>`;
+      }
+
+      if (type === 'updateOrderOne') {
+        return `
+<update id="updateOrderOne" parameterType="${camelCaseTableNameUpper}">
+  UPDATE ${tableName}    /* ${camelCaseTableNameWithoutTbUpper}Mapper.updateOrderOne */
+  SET ORDER_NO = #{orderNo}
+    , MOD_ID = #{modId}
+    , MOD_DT = CURRENT_TIMESTAMP
+  WHERE ${columns[0].column_name.toUpperCase()} = #{${camelCaseColumns[0]}}
+</update>`;
+      }
+
+    };
+
+
+
+    // 모든 SQL 쿼리 생성
+    const mapperXml = `
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.smart.rms.${filter.path}.mapper.${camelCaseTableNameWithoutTbUpper}Mapper">
+    ${createSql('findByKeyword')}
+    ${createSql('findById')}
+    ${createSql('insert')}
+    ${createSql('update')}
+    ${createSql('delete')}
+    ${createSql('updateOrderOne')}
+</mapper>
 `;
-  };
 
-  const generateServiceCode = (modelClass, camelCaseTableNameWithoutTb, camelCaseTableNameWithoutTbUpper) => {
-    return `
-package com.smart.rms.${filter.path}.service;
+    setgeneratedSource(`
+1. model
+${generateModelCode(columns, camelCaseTableNameUpper)}
+2. controller
+${generateControllerCode(camelCaseColumns)}
+3. service
+${generateServiceCode(camelCaseColumns)}
+4. mapper
+${generateMapperCode()}
+5. mapper.xml
+${mapperXml}
+`);
+};
 
-import com.smart.rms.${filter.path}.model.${modelClass};
-import com.smart.rms.${filter.path}.mapper.${camelCaseTableNameWithoutTb}Mapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
 
-@Service
-@RequiredArgsConstructor
-public class ${camelCaseTableNameWithoutTbUpper}Service {
-
-    private final ${camelCaseTableNameWithoutTb}Mapper ${camelCaseTableNameWithoutTb}Mapper;
-
-    public List<${modelClass}> findAll() {
-        return ${camelCaseTableNameWithoutTb}Mapper.findAll();
-    }
-
-    public ${modelClass} findById(Long id) {
-        return ${camelCaseTableNameWithoutTb}Mapper.findById(id).orElse(null);
-    }
-
-    public ${modelClass} save(${modelClass} ${camelCaseTableNameWithoutTb}) {
-        return ${camelCaseTableNameWithoutTb}Mapper.save(${camelCaseTableNameWithoutTb});
-    }
-
-    public ${modelClass} update(Long id, ${modelClass} ${camelCaseTableNameWithoutTb}) {
-        ${camelCaseTableNameWithoutTb}.setId(id);
-        return ${camelCaseTableNameWithoutTb}Mapper.save(${camelCaseTableNameWithoutTb});
-    }
-
-    public void delete(Long id) {
-        ${camelCaseTableNameWithoutTb}Mapper.deleteById(id);
-    }
-}
-`;
-  };
-
-  const generateMapperCode = (modelClass, camelCaseTableNameWithoutTb) => {
-    return `
-package com.smart.rms.${filter.path}.mapper;
-
-import com.smart.rms.${filter.path}.model.${modelClass};
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
-
-@Mapper
-public interface ${camelCaseTableNameWithoutTb}Mapper {
-
-    List<${modelClass}> findByKeyword(${modelClass} ${camelCaseTableNameWithoutTb});
-    ${modelClass} findById(@Param("id") Long id);
-    int insert(${modelClass} ${camelCaseTableNameWithoutTb});
-    int update(${modelClass} ${camelCaseTableNameWithoutTb});
-    int deleteById(@Param("id") Long id);
-    int updateOrderOne(${modelClass} ${camelCaseTableNameWithoutTb});
-    List<${modelClass}> findAllActive();
-}
-`;
-  };
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -355,9 +421,8 @@ public interface ${camelCaseTableNameWithoutTb}Mapper {
               color: 'white',
               height: 'auto',
             }}
-            value={generatedXml}
-            onChange={(e) => setGeneratedXml(e.target.value)}  // onChange 핸들러 추가
-
+            value={generatedSource}
+            onChange={(e) => setgeneratedSource(e.target.value)}  // onChange 핸들러 추가
           />
         </CCardBody>
       </CCard>
