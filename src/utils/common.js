@@ -65,3 +65,21 @@ export const getCodeOptionsForGantt = (codeMap, group) => {
     label: code.codeName
   }))
 }
+
+
+/**
+ * 아이콘 이름(cil-trash, cil-search 등)만 전달하면 기본 스타일의 SVG 아이콘 HTML을 반환합니다.
+ * 기본 스타일: 크기 1.1rem, cursor: pointer, 색상: currentColor
+ *
+ * @param {string} iconName - CoreUI 아이콘 ID (예: 'cil-trash', 'cil-search')
+ * @returns {string} SVG HTML 문자열
+ *
+ * @example
+ * iconTemplate('cil-trash')
+ * // → '<svg class="icon" style="..."><use href="/icons/coreui.svg#cil-trash"></use></svg>'
+ */
+export const iconTemplate = (iconName) => `
+  <svg class="icon icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;">
+    <use href="/icons/coreui.svg#${iconName}"></use>
+  </svg>
+`

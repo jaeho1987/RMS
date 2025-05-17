@@ -21,6 +21,7 @@ const DhtmlxTreeGrid = forwardRef(({
                                      orderBranch = true,
                                      orderBranchFree = false,
                                      style = { width: '100%', height: '600px' },
+                                     addToLast = false,
                                    }, ref) => {
   const ganttContainerRef = useRef(null)
   const initializedRef = useRef(false)
@@ -148,7 +149,10 @@ const DhtmlxTreeGrid = forwardRef(({
 
   useImperativeHandle(ref, () => ({
     addNewItem() {
-      const selectedId = window.gantt.getSelectedId() || 0
+      let selectedId = window.gantt.getSelectedId() || 0
+      if(addToLast){
+        selectedId = 0
+      }
       const newId = window.gantt.uid()
       window.gantt.addTask({
         id: newId,

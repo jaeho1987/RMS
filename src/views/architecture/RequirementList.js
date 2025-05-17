@@ -10,6 +10,7 @@ import DhtmlxTreeGrid from 'src/components/DhtmlxTreeGrid'
 import SystemSelectModal from './SystemSelectModal'
 import useSelectedSystem from 'src/hooks/useSelectedSystem'
 import { getCodeName, getCodeOptionsForGantt } from 'src/utils/common'
+import { iconTemplate} from 'src/utils/common'
 
 const RequirementList = () => {
   const codeMap = useSelector(state => state.codeMap)
@@ -179,7 +180,7 @@ const RequirementList = () => {
     {
       name: '상세', label: '상세', width: 80, align: 'center',
       template: () => `
-        <svg class="icon-detail" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-primary)">
+        <svg class="icon-detail" style="width:1.1rem;height:1.1rem;cursor:pointer;">
           <use href="/icons/coreui.svg#cil-search"></use>
         </svg>
       `
@@ -205,11 +206,7 @@ const RequirementList = () => {
     },
     {
       name: 'delete', label: '', width: 40, align: 'center',
-      template: () => `
-        <svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
-          <use class="icon-delete" href="/icons/coreui.svg#cil-trash"></use>
-        </svg>
-      `
+      template: () => iconTemplate('cil-trash'),
     }
   ]
 
