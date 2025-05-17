@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react'
 import { CCard, CCardBody, CButton } from '@coreui/react'
 import axiosInstance from 'src/api/axiosInstance'
 import DhtmlxTreeGrid from 'src/components/DhtmlxTreeGrid'
+import { iconTemplate } from 'src/utils/common'
 
 function MenuList() {
   const [treeData, setTreeData] = useState([])
@@ -32,10 +33,7 @@ function MenuList() {
       label: '',
       width: 40,
       align: 'center',
-      template: () =>
-        `<svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
-          <use href="/icons/coreui.svg#cil-trash"></use>
-        </svg>`
+      template: () => iconTemplate('cil-trash'),
     }
   ]
 

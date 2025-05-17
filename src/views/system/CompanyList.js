@@ -3,6 +3,7 @@ import { CCard, CCardBody, CCol, CForm, CFormInput, CRow, CButton } from '@coreu
 import { useNavigate } from 'react-router-dom'
 import axiosInstance from 'src/api/axiosInstance'
 import DhtmlxGrid from 'src/components/DhtmlxGrid'
+import { iconTemplate} from 'src/utils/common'
 
 const CompanyList = () => {
   const navigate = useNavigate()
@@ -61,10 +62,7 @@ const CompanyList = () => {
         header: [{ text: '' }],
         width: 60,
         htmlEnable: true,
-        template: () =>
-          `<svg class="icon-delete" style="width:1.1rem;height:1.1rem;cursor:pointer;fill:var(--cui-danger)">
-            <use href="/icons/coreui.svg#cil-trash"></use>
-          </svg>`
+        template: () => iconTemplate('cil-trash'),
       }
     ],
   }
