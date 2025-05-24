@@ -1,5 +1,6 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux'
+import { Link } from 'react-router-dom';
 import {
   CCloseButton,
   CSidebar,
@@ -128,17 +129,17 @@ const AppSidebar = () => {
       }}
     >
       <CSidebarHeader className="border-bottom">
-        <CSidebarBrand to="/">
-          <CIcon customClassName="sidebar-brand-full" icon={logo} height={32} />
-          <CIcon customClassName="sidebar-brand-narrow" icon={sygnet} height={32} />
-        </CSidebarBrand>
+        <div className="w-100 d-flex justify-content-center">
+          <Link to="/" className="text-decoration-none text-white fs-4 fw-bold">
+            NaviArch
+          </Link>
+        </div>
         <CCloseButton
           className="d-lg-none"
           dark
           onClick={() => dispatch({ type: 'set', sidebarShow: false })}
         />
       </CSidebarHeader>
-
       <CSidebarNav>
         <AppSidebarNav items={menuItems} key={topMenu} />
       </CSidebarNav>

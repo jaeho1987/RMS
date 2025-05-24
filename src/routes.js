@@ -4,14 +4,14 @@ const BizCodeList = React.lazy(() => import('./views/architecture/BizCodeList'))
 const RequirementList = React.lazy(() => import('./views/architecture/RequirementList'))
 const RequirementForm = React.lazy(() => import('./views/architecture/RequirementForm'))
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
+const TestCaseList = React.lazy(() => import('./views/architecture/TestcaseList'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
-const UserManagement = React.lazy(() => import('./views/system/UserManagement'))
+const UserList = React.lazy(() => import('./views/system/UserList'))
+const UserForm = React.lazy(() => import('./views/system/UserForm'))
 const CommonCodeList = React.lazy(() => import('./views/system/CommonCodeList'))
 const CompanyList = React.lazy(() => import('./views/system/CompanyList'))
 const CompanyForm = React.lazy(() => import('./views/system/CompanyForm'))
-const UserList = React.lazy(() => import('./views/user/UserList'))
-const UserForm = React.lazy(() => import('./views/user/UserForm'))
 const MenuList = React.lazy(() => import('./views/system/MenuList'))
 const DevGuide = React.lazy(() => import('./views/system/DevGuide'))
 //////////////////////시스템관리 종료
@@ -86,18 +86,25 @@ const routes = [
     element: <RequirementsTracking />,
     private: true,
   },
+  {
+    path: '/architecture/testcase',
+    name: '단위테스트',
+    element: <TestCaseList />,
+    private: true, // 로그인 필요 시
+  },
   { path: '/system/company', name: '회사목록', element: <CompanyList />, private: true },
   { path: '/system/company/new', name: '회사등록', element: <CompanyForm />, private: true },
   { path: '/system/company/:id', name: '회사수정', element: <CompanyForm />, private: true },
-  { path: '/system/user', name: '사용자관리', element: <UserManagement />, private: true },
+  { path: '/system/userList', name: '사용자관리', element: <UserList />, private: true },
+  { path: '/system/userForm/new', name: '사용자 정보수정', element: <UserForm />, private: true },
+  { path: '/system/userForm/:id', name: '사용자 정보수정', element: <UserForm />, private: true },
+
   {
     path: '/system/menu',
     name: '메뉴관리',
     element: <MenuList />,
     private: true, // 로그인 필요 시 true
   },
-  { path: '/system/user/new', name: '회사등록', element: <UserForm />, private: true },
-  { path: '/system/user/:id', name: '회사수정', element: <UserForm />, private: true },
   { path: '/system/commonCode', name: '공통코드관리', element: <CommonCodeList />, private: true },
   { path: '/system/devGuide', name: '공통코드관리', element: <DevGuide />, private: true },
   { path: '/', exact: true, name: 'Home', element: <Dashboard />, private: true },

@@ -9,7 +9,7 @@ const TestcaseTreeGrid = ({ reqSeq }) => {
   const treeGridRef = useRef(null)
   const [testcaseList, setTestcaseList] = useState([])
   const [addToLast, setAddToLast] = useState(true)  // true: 마지막 항목에 추가, false: 선택된 항목 아래에 추가
-  const { system } = useSelectedSystem()
+  const { system, systemRef } = useSelectedSystem()
 
   const columns = [
     {
@@ -92,11 +92,11 @@ const TestcaseTreeGrid = ({ reqSeq }) => {
       alert('시스템 코드가 없습니다. 시스템을 먼저 선택하세요.')
       return
     }
-
-    const allIds = treeGridRef.current?.getAllTaskIds?.() || []
-    const maxOrder = allIds.length
+    const maxOrder = window.gantt.getTaskCount()-1
+    const selected = systemRef.current
 
     row.reqSeq = reqSeq
+    row.bizSeq = selected.bizSeq
     row.sysCode = system.sysCode
     row.testName = '새 테스트케이스'
     row.text = row.testName
@@ -122,7 +122,7 @@ const TestcaseTreeGrid = ({ reqSeq }) => {
       if (!res.data.success) {
         alert('수정 실패')
       }
-      treeGridRef.current?.reload()
+      reload()
     })
   }
 
@@ -134,7 +134,7 @@ const TestcaseTreeGrid = ({ reqSeq }) => {
       } else {
         alert('삭제 실패')
       }
-      treeGridRef.current?.reload()
+      reload()
     })
   }
 

@@ -15,27 +15,34 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import axios from 'src/api/axiosInstance'
+import { useDispatch } from 'react-redux'
 
 const Login = () => {
-  const [username, setUsername] = useState('')
+  const [userId, setUserId] = useState('')
   const [password, setPassword] = useState('')
   const navigate = useNavigate()
+  const dispatch = useDispatch()
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    const params = new URLSearchParams()
-    params.append('username', username)
-    params.append('password', password)
-
     try {
-      const response = await axios.post('/loginForm', params, {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        withCredentials: true,
-        validateStatus: () => true,
-      })
+      const response = await axios.post(
+        '/api/auth/login',
+        {
+          userId,
+          password,
+        },
+        {
+          headers: { 'Content-Type': 'application/json' },
+          withCredentials: true,
+        }
+      )
 
-      if (response.status === 302 || response.status === 200) {
+      if (response.status === 200 && response.data.accessToken) {
+        // ✅ accessToken 저장
+        dispatch({ type: 'set', accessToken: response.data.accessToken })
+
         navigate('/dashboard')
       } else {
         alert('로그인 실패')
@@ -62,10 +69,10 @@ const Login = () => {
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
+                        placeholder="User ID"
                         autoComplete="username"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={userId}
+                        onChange={(e) => setUserId(e.target.value)}
                       />
                     </CInputGroup>
                     <CInputGroup className="mb-4">
@@ -90,7 +97,6 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-              {/* 오른쪽 패널 제거하고 싶으면 이 부분 삭제해도 됩니다 */}
               <CCard className="text-white bg-primary py-5" style={{ width: '44%' }}>
                 <CCardBody className="text-center">
                   <div>
