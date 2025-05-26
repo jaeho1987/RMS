@@ -213,7 +213,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.util.Date;npm
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -279,7 +279,7 @@ public class ${modelClass} {
         const valueFields = camelCaseColumns.map(col => `#{${col}}`).join('\n      , ');
         return `
 <insert id="insert" parameterType="${camelCaseTableNameUpper}">
-    <selectKey keyProperty="userId" resultType="long" order="BEFORE">
+    <selectKey keyProperty="${camelCaseColumns[0]}" resultType="long" order="BEFORE">
         SELECT nextval('seq_${filter.tableName.toLowerCase().replace(/^tb_/, '')}')
     </selectKey>
     INSERT INTO ${tableName} ( /* ${camelCaseTableNameWithoutTbUpper}Mapper.insert */
