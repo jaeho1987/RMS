@@ -1,0 +1,87 @@
+# Version 5.0.3 (December 5, 2024)
+
+### Fixes
+
+- The issue with the local trial package during import to frameworks
+
+# Version 5.0.0 (March 25, 2024)
+
+### Breaking change
+
+In the new release the `progressBar` property is deprecated and moved to the `templates` object. Check the Migration article for details.
+
+### New functionality
+
+- Support for new themes: Dark, Light High Contrast and Dark High Contrast
+- Ability to customize Vault appearance with the `templates` and `eventHandlers` configuration options
+- Integration with the Svelte framework
+
+### Updates
+
+- Renewed integrations with React, Angular and Vue.js
+
+### Fixes
+
+- Localization i18n problems
+- Incorrect rendering of preview containers when Vault is used inside a layout cell
+
+# Version 4.1.5 (December 20, 2023)
+
+### Fixes
+
+- Fix types issues
+
+# Version 4.1.3 (November 14, 2023)
+
+### Fixes
+
+- Fix the issue with dragging an item to the Vault toolbar
+- Fix a typo in the sources
+- Fix the problem with limiting a folder upload to 100 files in Chrome
+
+# Version 4.1.2 (May 29, 2023)
+
+### Fixes
+
+- Fix the issue with the file name encoding on loading a file in the grid mode
+- Fix the conflict between Vault and Suite CSS which led to missing items' padding in the List
+- Fix the issue with the promiz.js library that caused an error with the setImmediate() method definition on importing the sources
+
+# Version 4.1.1 (April 18, 2022)
+
+### Fixes
+
+- Fix the issue with placing of the vault inside the HTML form which caused sending of the form after clicking on the "Browse files" button
+- Now it is possible to drop messages from the Outlook application to Vault (in Edge and Chrome)
+
+# Version 4.1.0 (November 3, 2021)
+
+### New functionality
+
+- The ability to edit the name of a file via double-clicking on it
+- Key navigation
+- Ability to improve performance via disabling file previews
+
+# Version 4.0.0 (October 7, 2020)
+
+### New functionality
+
+- TypeScript support
+- Enhanced work on touch devices
+- New events are added: AfterDrag, AfterDrop, BeforeDrag, BeforeDrop, CancelDrop, CanDrop, Click, DoubleClick, DragIn, DragOut, DragStart, FocusChange, ItemMouseOver, ItemRightClick
+- The ability to include additional parameters into request headers via the headerParams property of the Uploader configuration object
+- The controls for switching between the "list" and "grid" modes now are shown in the toolbar of Vault by default. It is possible to hide the controls by setting the modeControls: false property
+- The ability to drag-and-drop files in the queue
+- The ability to select and remove several files from the queue at once
+
+#### Fixes
+
+- Fix the ability to drag-and-drop files on touch devices
+
+# Version 3.0 (September 2018)
+
+- Configurable vault layout
+- Ability to add extra buttons to the vault's toolbar
+- Grid mode
+
+https://docs.dhtmlx.com/vault/whats_new.html

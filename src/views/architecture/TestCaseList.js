@@ -9,7 +9,7 @@ import useSelectedSystem from 'src/hooks/useSelectedSystem'
 import { getCodeName, normalizeObject, iconTemplate } from 'src/utils/common'
 
 const TestCaseList = () => {
-  const codeMap = useSelector(state => state.codeMap)
+  const codeMap = useSelector((state) => state.codeMap)
   const { system, systemRef, updateSystem } = useSelectedSystem()
   const [testcaseList, setTestcaseList] = useState([])
   const [showPopup, setShowPopup] = useState(false)

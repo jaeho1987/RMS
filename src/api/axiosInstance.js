@@ -7,7 +7,8 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    store.dispatch({ type: 'set', loading: true })
+    //화면 깜빡여서 좀 그렇네...
+    // store.dispatch({ type: 'set', loading: true })
 
     const token = store.getState().accessToken // ✅ Redux에서 accessToken 가져옴
     if (token) {

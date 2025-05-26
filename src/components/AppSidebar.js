@@ -130,7 +130,7 @@ const AppSidebar = () => {
     >
       <CSidebarHeader className="border-bottom">
         <div className="w-100 d-flex justify-content-center">
-          <Link to="/" className="text-decoration-none text-white fs-4 fw-bold">
+          <Link to="/" className="text-decoration-none text-white fs-5 fw-bold">
             NaviArch
           </Link>
         </div>

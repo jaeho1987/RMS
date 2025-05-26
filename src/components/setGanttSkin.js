@@ -1,23 +1,31 @@
-// setGanttSkin.js
 export function setGanttSkin(theme) {
-  // theme: "light" | "dark"
-  let cssFile = "dhtmlxgantt_terrace.css";
-  if (theme === "dark") {
-    cssFile = "dhtmlxgantt_contrast_black.css";
+  const skin = theme === 'dark' ? 'dark' : 'meadow'
+
+  // 스킨 설정
+  if (window.gantt?.setSkin) {
+    window.gantt.setSkin(skin)
+  } else if (window.gantt) {
+    window.gantt.skin = skin
   }
 
-  const oldLink = document.getElementById("gantt-skin");
-  if (oldLink) oldLink.remove();
+  // 추가: 다크모드일 때 일부 색상 수정
+  const root = document.documentElement
+  if (theme === 'dark') {
+    root.style.setProperty('--dhx-gantt-base-colors-background', '#2D3039')
+    root.style.setProperty('--dhx-gantt-grid-scale-background', '#3F4350')
+    root.style.setProperty('--dhx-gantt-grid-scale-color', '#FFFFFA')
+    root.style.setProperty('--dhx-gantt-base-colors-border', '#6C6F75')
+    root.style.setProperty('--dhx-gantt-base-colors-select', '#3C414D')
+    root.style.setProperty('--dhx-gantt-base-colors-hover-color', '#3C414D')
+  } else {
+    root.style.removeProperty('--dhx-gantt-base-colors-background')
+    root.style.setProperty('--dhx-gantt-grid-scale-background', '#F7F7F7')
+    root.style.removeProperty('--dhx-gantt-grid-scale-color')
+    root.style.setProperty('--dhx-gantt-base-colors-border', '#E5E5E5')
+    root.style.removeProperty('--dhx-gantt-base-colors-select')
+    root.style.removeProperty('--dhx-gantt-base-colors-hover-color')
+  }
 
-  const link = document.createElement("link");
-  link.id = "gantt-skin";
-  link.rel = "stylesheet";
-  link.href = `/dhtmlx/gantt/codebase/skins/${cssFile}?v=${Date.now()}`;
-  link.onload = () => {
-    // 스킨 로드 후 gantt.render()
-    if (window.gantt?.render) {
-      window.gantt.render();
-    }
-  };
-  document.head.appendChild(link);
+  // 렌더링 반영
+  window.gantt?.render()
 }
