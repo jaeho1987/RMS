@@ -1,11 +1,11 @@
 import React, { Suspense, useEffect } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux' // ✅ 추가
-
 import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import './scss/examples.scss'
 import './utils/common.js'
+import axiosInstance from 'src/api/axiosInstance' // ✅ refresh 호출할 axios 인스턴스
 
 // Spinner
 import AppSpinner from 'src/components/AppSpinner'
@@ -41,6 +41,23 @@ const App = () => {
     if (!isColorModeSet()) {
       setColorMode(storedTheme)
     }
+
+    // ✅ access token 자동 복원
+    const tryRefreshToken = async () => {
+      try {
+        const res = await axiosInstance.get('/api/auth/refresh', { withCredentials: true })
+        const newAccessToken = res.data.accessToken
+
+        dispatch({ type: 'set', accessToken: newAccessToken })
+        // 👉 이후 axiosInstance interceptor에서 이 토큰을 사용하게 됨
+      } catch (e) {
+        console.warn('앱 시작 시 access token 갱신 실패')
+        dispatch({ type: 'set', accessToken: null })
+        // window.location.href = '/login' // 자동 로그인 실패 시 리디렉션 가능
+      }
+    }
+
+    tryRefreshToken()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   return (

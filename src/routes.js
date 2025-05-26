@@ -5,6 +5,7 @@ const RequirementList = React.lazy(() => import('./views/architecture/Requiremen
 const RequirementForm = React.lazy(() => import('./views/architecture/RequirementForm'))
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
 const TestCaseList = React.lazy(() => import('./views/architecture/TestcaseList'))
+const MinutesList = React.lazy(() => import('./views/architecture/MinutesList'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
 const UserList = React.lazy(() => import('./views/system/UserList'))
@@ -92,13 +93,18 @@ const routes = [
     element: <TestCaseList />,
     private: true, // 로그인 필요 시
   },
+  {
+    path: '/architecture/minutesList',
+    name: '회의록관리',
+    element: <MinutesList />,
+    private: true, // 로그인 필요 시
+  },
   { path: '/system/company', name: '회사목록', element: <CompanyList />, private: true },
   { path: '/system/company/new', name: '회사등록', element: <CompanyForm />, private: true },
   { path: '/system/company/:id', name: '회사수정', element: <CompanyForm />, private: true },
   { path: '/system/userList', name: '사용자관리', element: <UserList />, private: true },
   { path: '/system/userForm/new', name: '사용자 정보수정', element: <UserForm />, private: true },
   { path: '/system/userForm/:id', name: '사용자 정보수정', element: <UserForm />, private: true },
-
   {
     path: '/system/menu',
     name: '메뉴관리',

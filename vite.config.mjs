@@ -43,17 +43,17 @@ export default defineConfig(() => {
       port: 3000,
       proxy: {
         '/api': {
-          target: 'http://localhost:8080',
+          target: 'http://localhost:18080',
           changeOrigin: true,
           secure: false,
         },
         '/loginForm': {
-          target: 'http://localhost:8080',
+          target: 'http://localhost:18080',
           changeOrigin: true,
           secure: false,
         },
         '/logout': {
-          target: 'http://localhost:8080',
+          target: 'http://localhost:18080',
           changeOrigin: true,
           secure: false,
         },

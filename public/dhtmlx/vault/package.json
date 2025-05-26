@@ -1,0 +1,23 @@
+{
+  "name": "dhx-vault-package",
+  "version": "5.0.3",
+  "description": "dhtmlxVault widget",
+  "homepage": "https://docs.dhtmlx.com/vault",
+  "private": true,
+  "scripts": {
+    "start": "npm run backend samples",
+    "backend": "node backend/server.js"
+  },
+  "bugs": {
+    "url": "https://forum.dhtmlx.com",
+    "email": "support@dhtmlx.com"
+  },
+  "devDependencies": {
+    "busboy": "^1.6.0",
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "open": "^7.3.0"
+  },
+  "main": "codebase/vault.js",
+  "types": "codebase/vault.d.ts"
+}
