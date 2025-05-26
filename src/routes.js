@@ -4,7 +4,7 @@ const BizCodeList = React.lazy(() => import('./views/architecture/BizCodeList'))
 const RequirementList = React.lazy(() => import('./views/architecture/RequirementList'))
 const RequirementForm = React.lazy(() => import('./views/architecture/RequirementForm'))
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
-const TestCaseList = React.lazy(() => import('./views/architecture/TestcaseList'))
+const TestCaseList = React.lazy(() => import('./views/architecture/TestCaseList'))
 const MinutesList = React.lazy(() => import('./views/architecture/MinutesList'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
