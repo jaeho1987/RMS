@@ -58,7 +58,7 @@ const MinutesList = () => {
         upload: true,
         download: true,
         delete: true
-      }
+      },
     })
 
     const dataset = files.map(file => ({
@@ -77,9 +77,16 @@ const MinutesList = () => {
         .catch(() => false)
     })
 
-    // ✅ 바인딩 재실행을 위한 이벤트 연결
-    vaultRef.current.events.on("Change", bindDownloadEventHandlers)
-    vaultRef.current.events.on("ViewChange", bindDownloadEventHandlers)
+    function bindToolbarClickHandler() {
+      document.querySelectorAll(".dhx_toolbar-button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          debugger
+          setTimeout(() => {
+            bindDownloadEventHandlers(); // ✅ 수동 다운로드 이벤트 재바인딩
+          }, 0);
+        });
+      });
+    }
 
     // ✅ 초기 바인딩
     bindDownloadEventHandlers()
