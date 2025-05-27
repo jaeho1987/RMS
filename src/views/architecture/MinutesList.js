@@ -71,22 +71,18 @@ const MinutesList = () => {
 
     vaultRef.current.data.parse(dataset)
 
-    vaultRef.current.events.on("BeforeFileRemove", (id) => {
-      return axios.delete(`/api/fileInfo/${id}`)
+    vaultRef.current.events.on("BeforeRemove", (file) => {
+      return axios.delete(`/api/fileInfo/${file.id}`) // ✅ 여기가 핵심!
         .then(res => res.data.success)
         .catch(() => false)
     })
-
-    function bindToolbarClickHandler() {
+    setTimeout(() => {
       document.querySelectorAll(".dhx_toolbar-button").forEach((btn) => {
         btn.addEventListener("click", () => {
-          debugger
-          setTimeout(() => {
-            bindDownloadEventHandlers(); // ✅ 수동 다운로드 이벤트 재바인딩
-          }, 0);
+          bindDownloadEventHandlers()
         });
       });
-    }
+    }, 500); // 시간 늘려보기
 
     // ✅ 초기 바인딩
     bindDownloadEventHandlers()
