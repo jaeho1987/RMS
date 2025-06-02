@@ -6,6 +6,7 @@ const RequirementForm = React.lazy(() => import('./views/architecture/Requiremen
 const RequirementsTracking = React.lazy(() => import('./views/requirements/RequirementsTracking'))
 const TestCaseList = React.lazy(() => import('./views/architecture/TestCaseList'))
 const MinutesList = React.lazy(() => import('./views/architecture/MinutesList'))
+const ProcFunctionMapList = React.lazy(() => import('./views/architecture/ProcFunctionMapList'))
 //////////////////////아키텍처 종료
 //////////////////////시스템관리 START
 const UserList = React.lazy(() => import('./views/system/UserList'))
@@ -97,6 +98,12 @@ const routes = [
     path: '/architecture/minutesList',
     name: '회의록관리',
     element: <MinutesList />,
+    private: true, // 로그인 필요 시
+  },
+  {
+    path: '/architecture/ProcFunctionMapList',
+    name: '프로시저별기능정의서',
+    element: <ProcFunctionMapList />,
     private: true, // 로그인 필요 시
   },
   { path: '/system/company', name: '회사목록', element: <CompanyList />, private: true },

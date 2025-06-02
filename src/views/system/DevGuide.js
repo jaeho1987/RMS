@@ -43,6 +43,7 @@ const DevGuide = () => {
     // 'tb_'를 제거하고 카멜 표기법으로만 변경한 테이블명
     const camelCaseTableNameWithoutTb = tableName
       .replace(/^TB_/, '')
+      .replace(/^tb_/, '')
       .split('_')
       .map((word, index) => {
         return index === 0 ? word.toLowerCase() : word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
