@@ -1,5 +1,6 @@
 import React from 'react'
 import axios from '../../api/axiosInstance'
+import store from 'src/store'
 import { useNavigate } from 'react-router-dom'
 
 import {
@@ -33,14 +34,15 @@ const AppHeaderDropdown = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/logout', 'null', {
-        withCredentials: true,
-      })
-      navigate('/login')
+      await axios.post('/api/auth/logout', null) // axios는 axiosInstance 맞음
     } catch (err) {
-      console.log('logout failed', err)
+      console.warn('Logout failed:', err)
+    } finally {
+      store.dispatch({ type: 'set', accessToken: null }) // 토큰 제거
+      navigate('/login')
     }
   }
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
