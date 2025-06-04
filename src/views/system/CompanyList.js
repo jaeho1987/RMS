@@ -49,7 +49,7 @@ const CompanyList = () => {
   }
 
   const gridConfig = {
-    theme: document.documentElement.getAttribute('data-core-theme') || 'light',
+    theme: document.documentElement.getAttribute('data-coreui-theme') || 'light',
     height: 400,
     autoWidth: true,
     columns: [
