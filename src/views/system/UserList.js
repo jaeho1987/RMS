@@ -6,12 +6,12 @@ import DhtmlxGrid from 'src/components/DhtmlxGrid'
 
 const UserList = () => {
   const navigate = useNavigate()
-  const [search, setSearch] = useState({ userId: '', addRess: '', telNo: '' })
+  const [search, setSearch] = useState({ userName: '' })
   const [data, setData] = useState([])
 
   const fetchData = async () => {
-      const res = await axiosInstance.get('/api/users')
-      setData(res.data)
+    const res = await axiosInstance.get('/api/users', { params: search })
+    setData(res.data)
   }
   useEffect(() => {
     fetchData()
@@ -28,13 +28,13 @@ const UserList = () => {
   }
 
   const gridConfig = {
-    theme: document.documentElement.getAttribute('data-core-theme') || 'light',
+    theme: document.documentElement.getAttribute('data-coreui-theme') || 'light',
     height: 400,
     autoWidth: true,
     columns: [
       { id: 'userName', header: [{ text: '사용자명' }], width: 150 },
       { id: 'role', header: [{ text: '역할' }], width: 150 },
-      { id: 'email', header: [{ text: '이메일', fillspace: true }]},
+      { id: 'email', header: [{ text: '이메일', fillspace: true }] },
     ],
     contextMenu: true,
   }
@@ -48,13 +48,15 @@ const UserList = () => {
               <CCol md={6}>
                 <CFormInput
                   label="사용자명"
-                  name="bizNo"
-                  value={search.bizNo}
+                  name="userName"
+                  value={search.userName}
                   onChange={handleChange}
                 />
               </CCol>
               <CCol md={6} className="d-flex align-items-end justify-content-end">
-                <CButton type="button" color="primary" onClick={fetchData}>조회</CButton>
+                <CButton type="button" color="primary" onClick={fetchData}>
+                  조회
+                </CButton>
               </CCol>
             </CRow>
           </CForm>
